@@ -39,7 +39,7 @@ Future<AdGate> testAdGate() async {
 
 /// しおり・タグ・メモのサービス（端末内保存。読み込み前は空）を差し込むための override。
 /// 演習の画面（`LearnScreen`）がしおりボタンとメモ欄を出すので、画面を組むテストに入れる。
-List<Override> studyNotesOverrides() => [
+List<Override> studyNotesTestOverrides() => [
       bookmarkServiceProvider.overrideWithValue(
           BookmarkService(store: SharedPreferencesBookmarkStore('test'))),
       bookmarkTagServiceProvider.overrideWithValue(

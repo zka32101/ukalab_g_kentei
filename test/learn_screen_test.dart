@@ -75,7 +75,7 @@ Question _qb() => const Question(
 Widget _learn(List<Question> qs, AdGate adGate, {int? size}) => ProviderScope(
       overrides: [
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesOverrides(),
+        ...studyNotesTestOverrides(),
         coinServiceProvider.overrideWithValue(CoinService(store: InMemoryCoinStore())),
         adGateProvider.overrideWithValue(adGate),
       ],
@@ -108,7 +108,7 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesOverrides(),
+        ...studyNotesTestOverrides(),
         coinServiceProvider.overrideWithValue(coinService),
         adGateProvider.overrideWithValue(await testAdGate()),
       ],
@@ -136,7 +136,7 @@ void main() {
     var now = DateTime(2026, 10, 1);
     final container = ProviderContainer(overrides: [
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesOverrides(),
+        ...studyNotesTestOverrides(),
       coinServiceProvider.overrideWithValue(coinService),
       progressClockProvider.overrideWithValue(() => now),
       adGateProvider.overrideWithValue(await testAdGate()),
@@ -179,7 +179,7 @@ void main() {
     await tester.pumpWidget(ProviderScope(
       overrides: [
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesOverrides(),
+        ...studyNotesTestOverrides(),
         coinServiceProvider.overrideWithValue(CoinService(store: InMemoryCoinStore())),
         adGateProvider.overrideWithValue(await testAdGate()),
       ],
