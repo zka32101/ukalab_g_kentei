@@ -137,6 +137,33 @@ class ProgressNotifier extends Notifier<ProgressState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_mockPassedKey, true);
   }
+
+  /// バックアップの読み込み時に呼ぶ。[snapshot] で上書きする。
+  Future<void> replace(ProgressState snapshot) async {
+    await _loaded;
+    state = snapshot;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, jsonEncode(snapshot.answeredQidToCorrect));
+    await prefs.setBool(_mockPassedKey, snapshot.mockPassedEver);
+    final day = snapshot.lastStudyDay;
+    if (day == null) {
+      await prefs.remove(_lastStudyDayKey);
+    } else {
+      await prefs.setString(_lastStudyDayKey, day);
+    }
+    await prefs.setInt(_streakDaysKey, snapshot.streakDays);
+  }
+
+  /// 学習進捗をすべて消す。
+  Future<void> reset() async {
+    await _loaded;
+    state = const ProgressState();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+    await prefs.remove(_mockPassedKey);
+    await prefs.remove(_lastStudyDayKey);
+    await prefs.remove(_streakDaysKey);
+  }
 }
 
 final progressProvider = NotifierProvider<ProgressNotifier, ProgressState>(

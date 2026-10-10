@@ -36,6 +36,22 @@ class HistoryNotifier extends Notifier<List<ProgressRecord>> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_key, encodeHistory(state));
   }
+
+  /// バックアップの読み込み時に呼ぶ。[records] で上書きする。
+  Future<void> replace(List<ProgressRecord> records) async {
+    await _loaded;
+    state = records;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_key, encodeHistory(records));
+  }
+
+  /// 解答履歴をすべて消す。
+  Future<void> reset() async {
+    await _loaded;
+    state = const [];
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove(_key);
+  }
 }
 
 final historyProvider =
