@@ -45,7 +45,7 @@ Future<ProviderContainer> _pump(
   SharedPreferences.setMockInitialValues({});
   final container = ProviderContainer(overrides: [
     handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-    ...studyNotesOverrides(),
+    ...studyNotesTestOverrides(),
     adGateProvider.overrideWithValue(await testAdGate()),
     entitlementStateProvider.overrideWith(
       (ref) => Stream.value(EntitlementState(hasPremium: premium)),

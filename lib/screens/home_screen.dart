@@ -128,39 +128,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           PremiumPracticeCards(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.bookmark_border),
-              title: const Text('ブックマーク'),
-              subtitle: const Text('しおりを付けた問題を見返せます。タグでも整理できます。'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => BookmarkedQuestionsScreen(
-                    loadQuestions: () async => questions,
-                    detailBuilder: _detailBuilder,
-                  ),
-                ),
-              ),
-            ),
-          ),
-          const SizedBox(height: 16),
-          Card(
-            child: ListTile(
-              leading: const Icon(Icons.sticky_note_2_outlined),
-              title: const Text('自分用メモ'),
-              subtitle: const Text('解説の下に書き残したメモの一覧です。'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                  builder: (context) => MemoListScreen(
-                    loadQuestions: () async => questions,
-                    detailBuilder: _detailBuilder,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          StudyNotesHomeCards(loadQuestions: () async => questions, detailBuilder: _detailBuilder),
           const SizedBox(height: 16),
           Card(
             child: ListTile(

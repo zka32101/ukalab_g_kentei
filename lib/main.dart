@@ -92,12 +92,7 @@ void main() async {
   final examStatsService = FakeExamStatsService();
 
   // ブックマーク・タグ・問題メモ（端末内に保存）。
-  final bookmarkService = BookmarkService(store: SharedPreferencesBookmarkStore('g_kentei'));
-  await bookmarkService.load();
-  final bookmarkTagService = BookmarkTagService(store: SharedPreferencesBookmarkTagStore('g_kentei'));
-  await bookmarkTagService.load();
-  final questionMemoService = QuestionMemoService(store: SharedPreferencesQuestionMemoStore('g_kentei'));
-  await questionMemoService.load();
+  final studyNotes = await studyNotesOverrides('g_kentei');
 
   final container = ProviderContainer(
     overrides: [
@@ -108,9 +103,7 @@ void main() async {
       examStatsServiceProvider.overrideWithValue(examStatsService),
       handsFreeStoreProvider.overrideWithValue(SharedPreferencesHandsFreeStore('g_kentei')),
       examDateStoreProvider.overrideWithValue(ExamDateStore('g_kentei')),
-      bookmarkServiceProvider.overrideWithValue(bookmarkService),
-      bookmarkTagServiceProvider.overrideWithValue(bookmarkTagService),
-      questionMemoServiceProvider.overrideWithValue(questionMemoService),
+      ...studyNotes,
     ],
   );
   await container.read(handsFreeProvider.notifier).load();

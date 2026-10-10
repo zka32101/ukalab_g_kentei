@@ -12,7 +12,7 @@ import 'test_support.dart';
 Future<Widget> _app() async => ProviderScope(
       overrides: [
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesOverrides(),
+        ...studyNotesTestOverrides(),
         coinServiceProvider.overrideWithValue(CoinService(store: InMemoryCoinStore())),
         outfitServiceProvider.overrideWithValue(OutfitService(store: InMemoryOutfitStore())),
         entitlementServiceProvider.overrideWithValue(FakeEntitlementService(
