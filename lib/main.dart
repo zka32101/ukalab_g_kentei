@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'data/exam_date_store.dart';
+import 'package:ukalab_core/exam_date.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ukalab_g_kentei/data/exam_date_store.dart';
+import 'package:ukalab_core/exam_date.dart';
 import 'package:ukalab_g_kentei/data/history_store.dart';
 import 'package:ukalab_g_kentei/screens/learn_screen.dart';
 import 'package:ukalab_g_kentei/screens/premium_practice_cards.dart';

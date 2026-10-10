@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
-import '../data/exam_date_store.dart';
+import 'package:ukalab_core/exam_date.dart';
 import '../widgets/oshi_card.dart';
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
