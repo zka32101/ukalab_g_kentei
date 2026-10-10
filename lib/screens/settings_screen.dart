@@ -4,7 +4,7 @@ import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
 
-import '../data/exam_date_store.dart';
+import 'package:ukalab_core/exam_date.dart';
 import '../data/history_store.dart';
 
 /// 「設定」タブ。課金（決定35）の購入・復元を提供する。広告はnoads/premiumの
