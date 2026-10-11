@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ukalab_core/ui.dart' show encodeLearningDataBackup, resetLearningData, restoreLearningDataBackup;
+import 'package:ukalab_core/ui.dart' show encodeLearningDataBackupAsync, resetLearningData, restoreLearningDataBackup;
 import 'package:ukalab_g_kentei/data/data_parts.dart';
 import 'package:ukalab_g_kentei/data/progress_store.dart';
 
@@ -35,7 +35,7 @@ void main() {
             lastStudyDay: '2026-10-06',
             streakDays: 3,
           ));
-      final text = encodeLearningDataBackup(ref, gKenteiDataParts);
+      final text = await encodeLearningDataBackupAsync(ref, gKenteiDataParts);
 
       await resetLearningData(ref, gKenteiDataParts);
       expect(ref.read(progressProvider).answeredQidToCorrect, isEmpty);
