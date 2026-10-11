@@ -2,10 +2,12 @@ import 'package:app_common_kit/app_common_kit.dart';
 import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ukalab_core/mock_exam_history.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/progress_store.dart';
 import '../widgets/oshi_card.dart';
+import 'custom_mock_exam_screen.dart';
 
 /// 「模擬」タブ: 本試験相当の採点（合格ラインの目安は非公開のため70%を目安と明記）。
 ///
@@ -44,6 +46,12 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
         () => List.generate(q.choices.length, (i) => i)..shuffle(),
       );
 
+  bool _isPremium(WidgetRef ref) => canUsePremiumFeature(
+        PremiumFeature.mockExamHistory,
+        isPremium: (ref.read(entitlementStateProvider).valueOrNull ?? EntitlementState.free)
+            .hasPremium,
+      );
+
   void _start() {
     final level = widget.exam.levels.first;
     setState(() {
@@ -59,6 +67,32 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       _result = null;
       _statsSummary = null;
     });
+  }
+
+  void _startCustom(List<String> subjectIds, int count) {
+    setState(() {
+      _picked = pickCustomMockExamQuestions(
+        pool: widget.questions,
+        subjectIds: subjectIds,
+        count: count,
+        seed: DateTime.now().millisecondsSinceEpoch,
+      )..shuffle();
+      _answers.clear();
+      _choiceOrder.clear();
+      _index = 0;
+      _started = true;
+      _result = null;
+      _statsSummary = null;
+    });
+  }
+
+  Future<void> _openCustomSetup() async {
+    final setup = await Navigator.of(context).push<CustomMockExamSetup>(
+      MaterialPageRoute(
+        builder: (_) => CustomMockExamSetupScreen(subjects: widget.exam.subjects),
+      ),
+    );
+    if (setup != null) _startCustom(setup.subjectIds, setup.count);
   }
 
   void _select(int i) {
@@ -91,6 +125,10 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       examVersion: _examStatsVersion,
     );
     if (mounted) setState(() => _statsSummary = summary);
+
+    if (_isPremium(ref)) {
+      await ref.read(mockExamHistoryProvider.notifier).record(result);
+    }
 
     if (!result.passed) return;
     await ref.read(coinProvider.notifier).grant(CoinEvent.mockPass(widget.exam.examId));
@@ -155,6 +193,19 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
               ),
               const SizedBox(height: 24),
               FilledButton(onPressed: _start, child: const Text('模擬試験を始める')),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () {
+                  if (!_isPremium(ref)) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('カスタム模擬試験はプレミアムの機能です。設定から購入できます。')),
+                    );
+                    return;
+                  }
+                  _openCustomSetup();
+                },
+                child: const Text('カスタム模擬試験'),
+              ),
             ],
           ),
         ),
@@ -164,6 +215,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
     final result = _result;
     if (result != null) {
       final adGate = ref.watch(adGateProvider);
+      final history = _isPremium(ref) ? ref.watch(mockExamHistoryProvider) : const <MockExamHistoryEntry>[];
       return Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24),
@@ -178,6 +230,17 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
               ),
               const SizedBox(height: 16),
               StatsCompareWidget(summary: _statsSummary, myScore: result.total.score),
+              if (history.length > 1) ...[
+                const SizedBox(height: 16),
+                Text('成長グラフ', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 8),
+                MockExamTrendChart(
+                  points: [
+                    for (final h in history) MockExamTrendPoint(pct: h.pct, passed: h.passed),
+                  ],
+                  passPct: level.passRule.totalPct,
+                ),
+              ],
               const SizedBox(height: 16),
               adGate.banner(BannerPlacement.result),
             ],

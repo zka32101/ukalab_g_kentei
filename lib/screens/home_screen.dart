@@ -7,6 +7,7 @@ import 'package:ukalab_core/ukalab_core.dart';
 import 'package:ukalab_core/daily_goal.dart' show DailyMissionCard;
 import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
+import '../data/exam_repository.dart';
 import '../widgets/oshi_card.dart';
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
@@ -79,6 +80,7 @@ class HomeScreen extends ConsumerWidget {
     final userDate = ref.watch(examDateProvider);
     final theme = Theme.of(context);
     final adGate = ref.watch(adGateProvider);
+    final termReferences = ref.watch(examDataProvider).valueOrNull?.termReferences ?? const [];
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
@@ -170,6 +172,7 @@ class HomeScreen extends ConsumerWidget {
                         readings: chapterReadings,
                         terms: terms,
                         questions: questions,
+                        termReferences: termReferences,
                       ),
                     ),
                   ),
