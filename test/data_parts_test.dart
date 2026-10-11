@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:ukalab_core/ui.dart' show encodeLearningDataBackup, resetLearningData, restoreLearningDataBackup;
+import 'package:ukalab_core/ui.dart' show encodeLearningDataBackupAsync, resetLearningData, restoreLearningDataBackup;
 import 'package:ukalab_g_kentei/data/data_parts.dart';
 import 'package:ukalab_g_kentei/data/progress_store.dart';
 
@@ -11,7 +11,7 @@ import 'test_support.dart';
 void main() {
   test('パーツのidは重複しない', () {
     final ids = [for (final p in gKenteiDataParts) p.id];
-    expect(ids, ['achievementUnlock', 'progress', 'history', 'dailyGoal', 'dailyGoalHistory', 'questionMemo']);
+    expect(ids, ['achievementUnlock', 'learnedTerms', 'progress', 'history', 'dailyGoal', 'dailyGoalHistory', 'questionMemo']);
   });
 
   testWidgets('学習進捗を書き出し→リセット→読み込みで戻せる', (tester) async {
@@ -35,7 +35,7 @@ void main() {
             lastStudyDay: '2026-10-06',
             streakDays: 3,
           ));
-      final text = encodeLearningDataBackup(ref, gKenteiDataParts);
+      final text = await encodeLearningDataBackupAsync(ref, gKenteiDataParts);
 
       await resetLearningData(ref, gKenteiDataParts);
       expect(ref.read(progressProvider).answeredQidToCorrect, isEmpty);
