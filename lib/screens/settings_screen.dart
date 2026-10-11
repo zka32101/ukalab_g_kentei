@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ui.dart' show DataManagementSection;
 import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
 
+import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
@@ -96,6 +97,8 @@ class SettingsScreen extends ConsumerWidget {
           onPressed: () => _restore(context, ref),
           child: const Text('購入を復元'),
         ),
+        const Divider(height: 24),
+        const DailyGoalSetting(),
         const Divider(height: 24),
         DataManagementSection(
           parts: gKenteiDataParts,

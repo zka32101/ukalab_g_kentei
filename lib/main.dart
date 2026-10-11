@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ukalab_core/daily_goal.dart';
 import 'package:ukalab_core/exam_date.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
@@ -94,6 +95,9 @@ void main() async {
   // ブックマーク・タグ・問題メモ（端末内に保存）。
   final studyNotes = await studyNotesOverrides('g_kentei');
 
+  // デイリーミッション（今日の目標問題数）と学習カレンダー用の履歴。端末内に保存する。
+  final dailyGoal = await dailyGoalOverrides('g_kentei');
+
   final container = ProviderContainer(
     overrides: [
       coinServiceProvider.overrideWithValue(coinService),
@@ -104,6 +108,7 @@ void main() async {
       handsFreeStoreProvider.overrideWithValue(SharedPreferencesHandsFreeStore('g_kentei')),
       examDateStoreProvider.overrideWithValue(ExamDateStore('g_kentei')),
       ...studyNotes,
+      ...dailyGoal,
     ],
   );
   await container.read(handsFreeProvider.notifier).load();

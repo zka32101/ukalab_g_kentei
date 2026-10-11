@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ukalab_g_kentei/screens/settings_screen.dart';
 
+import 'test_support.dart';
+
 const _noAdsOffer = EntitlementOffer(
   id: 'noads',
   productId: 'g_kentei_noads',
@@ -29,6 +31,7 @@ Widget _app(FakeEntitlementService service) => ProviderScope(
       overrides: [
         entitlementServiceProvider.overrideWithValue(service),
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
+        ...studyNotesTestOverrides(),
       ],
       child: const MaterialApp(home: Scaffold(body: SettingsScreen())),
     );
