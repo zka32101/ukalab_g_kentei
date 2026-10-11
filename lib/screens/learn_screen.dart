@@ -1,5 +1,6 @@
 import 'package:app_common_kit/app_common_kit.dart';
 import 'package:app_common_kit/hands_free_tts.dart';
+import 'package:ukalab_core/daily_goal.dart' show recordDailyAnswer;
 import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -79,6 +80,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     _session.answer(i);
     final correct = i == q.answerIndex;
     await ref.read(progressProvider.notifier).recordAnswer(q.qid, correct: correct);
+    await recordDailyAnswer(ref);
     await ref.read(historyProvider.notifier).record(
           q,
           correct: correct,

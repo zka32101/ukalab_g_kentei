@@ -11,7 +11,7 @@ import 'test_support.dart';
 void main() {
   test('パーツのidは重複しない', () {
     final ids = [for (final p in gKenteiDataParts) p.id];
-    expect(ids, ['progress', 'history', 'questionMemo']);
+    expect(ids, ['progress', 'history', 'dailyGoal', 'dailyGoalHistory', 'questionMemo']);
   });
 
   testWidgets('学習進捗を書き出し→リセット→読み込みで戻せる', (tester) async {
