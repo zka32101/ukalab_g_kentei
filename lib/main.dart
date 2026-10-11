@@ -11,6 +11,8 @@ import 'package:ukalab_core/daily_goal.dart';
 import 'package:ukalab_core/achievements.dart'
     show achievementUnlockOverrides, dailyGoalAchievementsOverride, watchAchievementUnlocks;
 import 'package:ukalab_core/reminder.dart' show reminderOverrides;
+import 'package:ukalab_core/reminder_notification.dart'
+    show ReminderNotificationWatcher, reminderNotifierProvider;
 import 'package:ukalab_core/exam_date.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
@@ -18,6 +20,7 @@ import 'screens/learn_screen.dart';
 import 'screens/mock_exam_screen.dart';
 import 'screens/record_screen.dart';
 import 'screens/settings_screen.dart';
+import 'services/local_reminder_notifier.dart';
 import 'services/no_ads_backend.dart';
 
 /// Google公式のテスト広告ユニットID。本番公開前に実際のIDへ差し替える（決定35）。
@@ -117,6 +120,8 @@ void main() async {
       ...reminder,
       ...achievementUnlock,
       dailyGoalAchievementsOverride,
+      // 端末の通知は、スマホ（Android・iOS）だけ。Web は何もしない既定のまま。
+      if (!kIsWeb) reminderNotifierProvider.overrideWithValue(LocalReminderNotifier()),
     ],
   );
   await container.read(handsFreeProvider.notifier).load();
@@ -147,6 +152,7 @@ class UkalabGKenteiApp extends ConsumerWidget {
     watchAchievementUnlocks(ref, scaffoldMessengerKey);
     return MaterialApp(
       scaffoldMessengerKey: scaffoldMessengerKey,
+      builder: (context, child) => ReminderNotificationWatcher(child: child ?? const SizedBox.shrink()),
       title: 'うかラボ G検定',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ja', 'JP'),
