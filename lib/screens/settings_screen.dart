@@ -6,6 +6,7 @@ import 'package:ukalab_core/ui.dart' show DataManagementSection;
 import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
 
 import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
+import 'package:ukalab_core/reminder.dart' show ReminderSettingsSection;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
@@ -99,6 +100,8 @@ class SettingsScreen extends ConsumerWidget {
         ),
         const Divider(height: 24),
         const DailyGoalSetting(),
+        const Divider(height: 24),
+        const ReminderSettingsSection(),
         const Divider(height: 24),
         DataManagementSection(
           parts: gKenteiDataParts,
