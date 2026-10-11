@@ -8,6 +8,7 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ukalab_core/daily_goal.dart';
+import 'package:ukalab_core/reminder.dart' show reminderOverrides;
 import 'package:ukalab_core/exam_date.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
@@ -97,6 +98,7 @@ void main() async {
 
   // デイリーミッション（今日の目標問題数）と学習カレンダー用の履歴。端末内に保存する。
   final dailyGoal = await dailyGoalOverrides('g_kentei');
+  final reminder = await reminderOverrides('g_kentei');
 
   final container = ProviderContainer(
     overrides: [
@@ -109,6 +111,7 @@ void main() async {
       examDateStoreProvider.overrideWithValue(ExamDateStore('g_kentei')),
       ...studyNotes,
       ...dailyGoal,
+      ...reminder,
     ],
   );
   await container.read(handsFreeProvider.notifier).load();

@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ukalab_core/daily_goal.dart';
+import 'package:ukalab_core/reminder.dart';
 import 'package:ukalab_core/ui.dart';
 
 /// テスト用の広告バックエンド。何も表示せず、常に準備済みとして振る舞う。
@@ -51,4 +52,6 @@ List<Override> studyNotesTestOverrides() => [
       dailyGoalServiceProvider.overrideWithValue(DailyGoalService(store: DailyGoalStore('test'))),
       dailyGoalHistoryServiceProvider
           .overrideWithValue(DailyGoalHistoryService(store: DailyGoalHistoryStore('test'))),
+      reminderSettingsServiceProvider
+          .overrideWithValue(ReminderSettingsService(store: ReminderSettingsStore('test'))),
     ];
