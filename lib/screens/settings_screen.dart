@@ -2,9 +2,11 @@ import 'package:app_common_kit/app_common_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ukalab_core/ui.dart' show DataManagementSection;
 import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
 
 import 'package:ukalab_core/exam_date.dart';
+import '../data/data_parts.dart';
 import '../data/history_store.dart';
 
 /// 「設定」タブ。課金（決定35）の購入・復元を提供する。広告はnoads/premiumの
@@ -93,6 +95,12 @@ class SettingsScreen extends ConsumerWidget {
         TextButton(
           onPressed: () => _restore(context, ref),
           child: const Text('購入を復元'),
+        ),
+        const Divider(height: 24),
+        DataManagementSection(
+          parts: gKenteiDataParts,
+          description: '学習進捗・解答履歴・自分用メモは、試験日・ブックマークを除いて、'
+              '書き出し・読み込み・リセットができます。',
         ),
       ],
     );
