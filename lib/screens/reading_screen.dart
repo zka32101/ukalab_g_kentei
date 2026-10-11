@@ -1,21 +1,27 @@
 import 'package:app_common_kit/app_common_kit.dart';
+import 'package:app_common_kit/hands_free_tts.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
 import 'learn_screen.dart';
 
 /// 章ごとの解説読み物（教科書的なまとめページ）の一覧。
-class ReadingListScreen extends StatelessWidget {
+class ReadingListScreen extends ConsumerWidget {
   const ReadingListScreen({
     super.key,
     required this.readings,
     required this.terms,
     required this.questions,
+    required this.termReferences,
   });
 
   final List<ChapterReading> readings;
   final List<Term> terms;
   final List<Question> questions;
+
+  /// 本文中で検出してタップ可能にする用語（既存の用語集と同じ一覧）。
+  final List<TermReference> termReferences;
 
   Term? _termById(String termId) {
     for (final t in terms) {
@@ -31,8 +37,14 @@ class ReadingListScreen extends StatelessWidget {
     return null;
   }
 
+  bool _isPremium(WidgetRef ref) => canUsePremiumFeature(
+        PremiumFeature.readingReadAloud,
+        isPremium: (ref.read(entitlementStateProvider).valueOrNull ?? EntitlementState.free)
+            .hasPremium,
+      );
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     if (readings.isEmpty) {
       return const EmptyState(message: '解説読み物のデータがまだありません。');
     }
@@ -70,6 +82,7 @@ class ReadingListScreen extends StatelessWidget {
                             label: _questionById(id)!.prompt,
                           ),
                     ],
+                    bodyTermReferences: termReferences,
                     onRelatedTermTap: (termId) {
                       final term = _termById(termId);
                       if (term == null) return;
@@ -98,6 +111,12 @@ class ReadingListScreen extends StatelessWidget {
                         ),
                       );
                     },
+                    onReadAloud: !_isPremium(ref)
+                        ? null
+                        : () {
+                            final text = r.sections.map((s) => '${s.heading}。${s.body}').join('');
+                            ref.read(handsFreeSpeakerProvider).speakNow(text);
+                          },
                   ),
                 ),
               ),
