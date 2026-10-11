@@ -1,5 +1,6 @@
 import 'package:ukalab_core/achievements.dart' show achievementUnlockDataPart;
 import 'package:ukalab_core/daily_goal.dart';
+import 'package:ukalab_core/glossary.dart' show LearnedTermsStore, learnedTermsDataPart;
 import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
@@ -12,6 +13,7 @@ import 'progress_store.dart';
 /// デイリーミッション（目標・達成履歴）、自分用メモが対象。試験日・ブックマークは設定・整理物として含めない。
 final List<DataPart> gKenteiDataParts = [
   achievementUnlockDataPart,
+  learnedTermsDataPart(LearnedTermsStore('g_kentei')),
   DataPart(
     id: 'progress',
     export: (ref) {
