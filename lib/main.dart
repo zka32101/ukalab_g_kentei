@@ -8,6 +8,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:ukalab_core/daily_goal.dart';
+import 'package:ukalab_core/achievements.dart'
+    show achievementUnlockOverrides, dailyGoalAchievementsOverride, watchAchievementUnlocks;
 import 'package:ukalab_core/reminder.dart' show reminderOverrides;
 import 'package:ukalab_core/exam_date.dart';
 import 'data/exam_repository.dart';
@@ -99,6 +101,7 @@ void main() async {
   // デイリーミッション（今日の目標問題数）と学習カレンダー用の履歴。端末内に保存する。
   final dailyGoal = await dailyGoalOverrides('g_kentei');
   final reminder = await reminderOverrides('g_kentei');
+  final achievementUnlock = await achievementUnlockOverrides('g_kentei');
 
   final container = ProviderContainer(
     overrides: [
@@ -112,6 +115,8 @@ void main() async {
       ...studyNotes,
       ...dailyGoal,
       ...reminder,
+      ...achievementUnlock,
+      dailyGoalAchievementsOverride,
     ],
   );
   await container.read(handsFreeProvider.notifier).load();
@@ -131,12 +136,17 @@ ThemeData _withFont(ThemeData t) => t.copyWith(
       primaryTextTheme: t.primaryTextTheme.apply(fontFamily: kAppFontFamily),
     );
 
-class UkalabGKenteiApp extends StatelessWidget {
+/// 実績の解除通知のスナックバーを、どの画面にいても表示するためのキー。
+final scaffoldMessengerKey = GlobalKey<ScaffoldMessengerState>();
+
+class UkalabGKenteiApp extends ConsumerWidget {
   const UkalabGKenteiApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    watchAchievementUnlocks(ref, scaffoldMessengerKey);
     return MaterialApp(
+      scaffoldMessengerKey: scaffoldMessengerKey,
       title: 'うかラボ G検定',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ja', 'JP'),

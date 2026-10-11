@@ -1,3 +1,4 @@
+import 'package:ukalab_core/achievements.dart' show achievementUnlockDataPart;
 import 'package:ukalab_core/daily_goal.dart';
 import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_core/ukalab_core.dart';
@@ -10,6 +11,7 @@ import 'progress_store.dart';
 /// 学習進捗（解答済みの問題・模擬試験の合格・連続学習日数）、解答履歴、
 /// デイリーミッション（目標・達成履歴）、自分用メモが対象。試験日・ブックマークは設定・整理物として含めない。
 final List<DataPart> gKenteiDataParts = [
+  achievementUnlockDataPart,
   DataPart(
     id: 'progress',
     export: (ref) {
