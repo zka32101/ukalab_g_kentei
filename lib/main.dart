@@ -198,6 +198,7 @@ class _RootPage extends ConsumerWidget {
               nnBuilderDatasets: data.nnBuilderDatasets,
               ethicsCaseScenarios: data.ethicsCaseScenarios,
               storyScenarios: data.storyScenarios,
+              chapterReadings: data.chapterReadings,
             ),
             LearnScreen(questions: questions, terms: data.terms),
             MockExamScreen(exam: data.exam, questions: questions),

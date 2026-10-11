@@ -24,6 +24,7 @@ class ExamData {
     required this.nnBuilderDatasets,
     required this.ethicsCaseScenarios,
     required this.storyScenarios,
+    required this.chapterReadings,
   });
 
   final ExamConfig exam;
@@ -68,6 +69,9 @@ class ExamData {
 
   /// AIプロジェクト経営モード（画期的な機能8、ストーリー型）のシナリオ一覧。
   final List<StoryScenario> storyScenarios;
+
+  /// 章ごとの解説読み物（教科書的なまとめページ）の一覧。
+  final List<ChapterReading> chapterReadings;
 
   List<Question> get activeQuestions =>
       questions.where((q) => !q.disabled).toList();
@@ -145,6 +149,10 @@ Future<ExamData> loadExamData() async {
       await rootBundle.loadString('assets/experience/story_mode_g_kentei.jsonl');
   final parsedStory = parseStoryScenariosJsonl(storyJsonl);
 
+  final readingJsonl =
+      await rootBundle.loadString('assets/experience/reading_g_kentei.jsonl');
+  final parsedReading = parseChapterReadingsJsonl(readingJsonl);
+
   final issues = [
     ...parsed.issues,
     ...validateQuestions(parsed.questions, exam: exam),
@@ -180,6 +188,13 @@ Future<ExamData> loadExamData() async {
     ...validateEthicsCaseScenarios(parsedEthicsCase.scenarios, exam: exam),
     ...parsedStory.issues,
     ...validateStoryScenarios(parsedStory.scenarios, exam: exam),
+    ...parsedReading.issues,
+    ...validateChapterReadings(
+      parsedReading.items,
+      exam: exam,
+      termIds: parsedTerms.terms.map((t) => t.termId).toList(),
+      questionIds: parsed.questions.map((q) => q.qid).toList(),
+    ),
   ];
   if (issues.isNotEmpty) {
     throw StateError('問題・用語データに不備があります: ${issues.first}');
@@ -201,6 +216,7 @@ Future<ExamData> loadExamData() async {
     nnBuilderDatasets: parsedNnBuilder.datasets,
     ethicsCaseScenarios: parsedEthicsCase.scenarios,
     storyScenarios: parsedStory.scenarios,
+    chapterReadings: parsedReading.items,
   );
 }
 

@@ -21,6 +21,7 @@ import 'nn_builder_screen.dart';
 import 'pace_run_screen.dart';
 import 'premium_practice_cards.dart';
 import 'predict_run_screen.dart';
+import 'reading_screen.dart';
 import 'route_planner_screen.dart';
 import 'teach_mascot_screen.dart';
 import 'term_map_screen.dart';
@@ -46,6 +47,7 @@ class HomeScreen extends ConsumerWidget {
     required this.nnBuilderDatasets,
     required this.ethicsCaseScenarios,
     required this.storyScenarios,
+    required this.chapterReadings,
   });
 
   final ExamConfig exam;
@@ -64,6 +66,7 @@ class HomeScreen extends ConsumerWidget {
   final List<NnBuilderDataset> nnBuilderDatasets;
   final List<EthicsCaseScenario> ethicsCaseScenarios;
   final List<StoryScenario> storyScenarios;
+  final List<ChapterReading> chapterReadings;
 
   /// 一覧から開く問題の詳細。選択肢の記号は演習（A・B・C…）に合わせる。
   Widget _detailBuilder(BuildContext context, Question q) => QuestionDetailScreen(
@@ -151,6 +154,29 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
+          if (chapterReadings.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            Card(
+              child: ListTile(
+                leading: const Icon(Icons.auto_stories_outlined),
+                title: const Text('章ごとの解説読み物'),
+                subtitle: const Text('公式の章立てに沿って、学習項目を体系的に読めます。'),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (context) => Scaffold(
+                      appBar: AppBar(title: const Text('章ごとの解説読み物')),
+                      body: ReadingListScreen(
+                        readings: chapterReadings,
+                        terms: terms,
+                        questions: questions,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ],
           if (boundaryScenarios.isNotEmpty) ...[
             const SizedBox(height: 16),
             Card(
