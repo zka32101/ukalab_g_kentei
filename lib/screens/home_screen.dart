@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
 import 'package:ukalab_core/daily_goal.dart' show DailyMissionCard;
+import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
 import '../widgets/oshi_card.dart';
 import 'ai_project_screen.dart';
@@ -128,6 +129,7 @@ class HomeScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           const DailyMissionCard(),
+          const StudyReminderCard(),
           const SizedBox(height: 16),
           PremiumPracticeCards(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
