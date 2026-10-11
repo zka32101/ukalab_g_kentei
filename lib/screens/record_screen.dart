@@ -1,6 +1,7 @@
 import 'package:app_common_kit/app_common_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:ukalab_core/achievements.dart' show AchievementsView, dailyGoalAchievementCategoryLabels;
 import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/progress_store.dart';
@@ -45,6 +46,17 @@ class RecordScreen extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          leading: const Icon(Icons.emoji_events_outlined),
+          title: const Text('実績'),
+          trailing: const Icon(Icons.chevron_right),
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              builder: (_) => const AchievementsView(categoryLabels: dailyGoalAchievementCategoryLabels),
+            ),
+          ),
+        ),
         Text(
           progress.mockPassedEver ? '模擬試験: 目安の正答率を超えたことがあります' : '模擬試験: まだ目安の正答率を超えていません',
           style: theme.textTheme.bodyMedium,
