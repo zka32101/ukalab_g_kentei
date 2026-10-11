@@ -62,12 +62,6 @@ class SettingsScreen extends ConsumerWidget {
           onTap: () => _copyHistory(context, ref),
         ),
         const Divider(height: 24),
-        DataManagementSection(
-          parts: gKenteiDataParts,
-          description: '学習進捗・解答履歴・自分用メモは、試験日・ブックマークを除いて、'
-              '書き出し・読み込み・リセットができます。',
-        ),
-        const Divider(height: 24),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16),
           child: Text('購入', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -101,6 +95,12 @@ class SettingsScreen extends ConsumerWidget {
         TextButton(
           onPressed: () => _restore(context, ref),
           child: const Text('購入を復元'),
+        ),
+        const Divider(height: 24),
+        DataManagementSection(
+          parts: gKenteiDataParts,
+          description: '学習進捗・解答履歴・自分用メモは、試験日・ブックマークを除いて、'
+              '書き出し・読み込み・リセットができます。',
         ),
       ],
     );
