@@ -1,7 +1,7 @@
 name: ukalab_g_kentei
 description: "うかラボ G検定 - JDLA G検定（ジェネラリスト検定）対策アプリ。JDLAとは無関係の非公式アプリ。"
 publish_to: 'none'
-version: 0.1.0
+version: 1.0.0+1
 
 environment:
   sdk: ^3.9.2
