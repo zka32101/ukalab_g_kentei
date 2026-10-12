@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:app_common_kit/app_common_kit.dart' show TermReference;
+import 'package:ukalab_core/ui.dart' show TermReference;
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
