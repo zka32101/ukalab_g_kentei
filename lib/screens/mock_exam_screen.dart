@@ -7,7 +7,6 @@ import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/progress_store.dart';
 import '../widgets/oshi_card.dart';
-import 'custom_mock_exam_screen.dart';
 
 /// 「模擬」タブ: 本試験相当の採点（合格ラインの目安は非公開のため70%を目安と明記）。
 ///
