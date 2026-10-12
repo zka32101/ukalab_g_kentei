@@ -1,5 +1,5 @@
-import 'package:app_common_kit/app_common_kit.dart';
 import 'package:ukalab_core/ukalab_core.dart';
+import 'package:ukalab_core/ui.dart';
 
 /// 用語マップ・AI系譜図（決定41）向け。用語に関連する問題
 /// （[Term.relatedQuestionIds]）の正答率から習得度を判定する。
