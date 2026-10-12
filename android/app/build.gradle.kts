@@ -19,7 +19,7 @@ fun signingProp(key: String, env: String): String? =
     keystoreProperties.getProperty(key) ?: System.getenv(env)
 
 android {
-    namespace = "com.yourwish.ukalab_g_kentei"
+    namespace = "com.yourwish.ukalab.g_kentei"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -36,7 +36,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.yourwish.ukalab_g_kentei"
+        applicationId = "com.yourwish.ukalab.g_kentei"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
