@@ -1,3 +1,4 @@
+import 'package:app_common_kit/app_common_kit.dart' show ExamDateTile;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/exam_date.dart';
@@ -69,6 +70,54 @@ class CoreFeaturesCard extends ConsumerWidget {
     );
   }
 }
+
+/// ホームの試験日カウントダウン(チップ)。無料。未設定なら何も出ない(core の仕様)。
+/// 日付は「試験に向けて」カードと同じ(ユーザー設定を優先、なければ公式日程の先頭)。
+/// タップで試験日の設定画面([openExamDateSettings])を開く。
+class ExamCountdownEntry extends ConsumerWidget {
+  const ExamCountdownEntry({
+    super.key,
+    required this.exam,
+    this.clock = DateTime.now,
+  });
+
+  final ExamConfig exam;
+  final DateTime Function() clock;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final date = effectiveExamDates(ref.watch(examDateProvider), exam.examDates)
+        .firstOrNull;
+    if (date == null) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: ExamCountdownChip(
+          examDate: date,
+          clock: clock,
+          onTap: () => openExamDateSettings(context),
+        ),
+      ),
+    );
+  }
+}
+
+/// 試験日の設定画面。設定タブの試験日タイルと同じタイル(同じ日付ピッカー・同じ保存先)を開く。
+Future<void> openExamDateSettings(BuildContext context) =>
+    Navigator.of(context).push(MaterialPageRoute<void>(
+      builder: (_) => Scaffold(
+        appBar: AppBar(title: const Text('試験日の設定')),
+        body: Consumer(
+          builder: (context, ref, _) => ListView(children: [
+            ExamDateTile(
+              date: ref.watch(examDateProvider),
+              onChanged: (d) => ref.read(examDateProvider.notifier).setDate(d),
+            ),
+          ]),
+        ),
+      ),
+    ));
 
 /// 設定タブの、更新ログ・履歴書き出しの入口。
 class CoreFeatureSettingsTiles extends ConsumerWidget {
