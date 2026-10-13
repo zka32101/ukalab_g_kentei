@@ -49,6 +49,12 @@ AdUnitIds _adUnitIds() => kIsWeb
         rewarded: 'ca-app-pub-3940256099942544/5224354917',
       );
 
+/// RevenueCat の公開SDKキー（Google Play 用）。ビルド時に
+/// `--dart-define=RC_GOOGLE_KEY=goog_...` で渡す。コミットしない。
+/// 未指定（空）の間は、これまでどおり仮の購入サービス（FakeEntitlementService）で動く。
+const _rcGoogleKey = String.fromEnvironment('RC_GOOGLE_KEY');
+bool get _useRevenueCat => !kIsWeb && Platform.isAndroid && _rcGoogleKey.isNotEmpty;
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -71,9 +77,12 @@ void main() async {
   final outfitService = OutfitService(store: SharedPreferencesOutfitStore('g_kentei'));
   await outfitService.load();
 
-  // 課金（RevenueCat）。実際のAPIキー取得後にRevenueCatEntitlementServiceへ
-  // 差し替える。価格は競合調査を踏まえた暫定値で、運営者確認が必要（決定14）。
-  final entitlementService = FakeEntitlementService(
+  // 課金。RC_GOOGLE_KEY が渡されたAndroidビルドだけ RevenueCat を使い、それ以外は
+  // 仮の購入サービス。価格（仮サービス側）は競合調査を踏まえた暫定値で、運営者確認が必要（決定14）。
+  // RevenueCat 側は entitlement ID を 'noads' / 'premium'、商品を現行オファリングに登録する。
+  final EntitlementService entitlementService = _useRevenueCat
+      ? await RevenueCatEntitlementService.init(publicSdkKey: _rcGoogleKey)
+      : FakeEntitlementService(
     availableOffers: const [
       EntitlementOffer(
         id: 'noads',
