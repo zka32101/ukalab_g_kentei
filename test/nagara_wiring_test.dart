@@ -10,6 +10,7 @@ import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 import 'package:ukalab_g_kentei/data/history_store.dart';
 import 'package:ukalab_g_kentei/data/mistake_notes.dart';
+import 'package:ukalab_g_kentei/data/progress_store.dart';
 import 'package:ukalab_g_kentei/screens/nagara_entry.dart';
 import 'package:ukalab_g_kentei/screens/settings_screen.dart';
 
@@ -97,7 +98,7 @@ void main() {
     expect(env.speech.spoken.length, spokenAtStop);
   });
 
-  testWidgets('誤答は履歴に載り、間違いノートにも取り込まれる。正解の選択肢では記録されない', (tester) async {
+  testWidgets('誤答は1回だけ履歴に載り、間違いノートにも取り込まれる', (tester) async {
     final env = await _env(tester,
         NagaraSessionScreen(questions: [_q('a')], maxQuestions: 5));
     await tester.pump(const Duration(milliseconds: 50));
@@ -109,9 +110,46 @@ void main() {
     final history = env.container.read(historyProvider);
     expect(history.map((r) => r.qid), ['a']);
     expect(history.single.correct, isFalse);
+    expect(env.container.read(progressProvider).distinctAnswered, 1);
     final notes = mistakeNoteEngine.build(history);
     expect(notes.map((e) => e.qid), ['a']);
     expect(find.text('おつかれさまでした'), findsOneWidget);
+  });
+
+  testWidgets('正解のタップも履歴・進捗に1回だけ載り、間違いノートの克服が進む', (tester) async {
+    final env = await _env(tester, const SizedBox());
+    final history = env.container.read(historyProvider.notifier);
+    final q = _q('a');
+    await history.record(q, correct: false, at: DateTime(2026, 10, 1));
+    await history.record(q, correct: true, at: DateTime(2026, 10, 2));
+    expect(mistakeNoteEngine.build(env.container.read(historyProvider)).single.overcome, isFalse);
+
+    await tester.pumpWidget(UncontrolledProviderScope(
+      container: env.container,
+      child: MaterialApp(home: NagaraSessionScreen(questions: [q], maxQuestions: 5)),
+    ));
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(find.text('aの正解'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+
+    final records = env.container.read(historyProvider);
+    expect(records, hasLength(3));
+    expect(records.last.correct, isTrue);
+    expect(env.container.read(progressProvider).distinctAnswered, 1);
+    expect(mistakeNoteEngine.build(records).single.overcome, isTrue);
+  });
+
+  testWidgets('スキップは履歴・進捗に載らない', (tester) async {
+    final env = await _env(tester,
+        NagaraSessionScreen(questions: [_q('a'), _q('b')], maxQuestions: 5));
+    await tester.pump(const Duration(milliseconds: 50));
+    await tester.tap(find.text('スキップ'));
+    await tester.pump();
+    await tester.tap(find.text('終了'));
+    await tester.pump();
+    expect(env.container.read(historyProvider), isEmpty);
+    expect(env.container.read(progressProvider).distinctAnswered, 0);
   });
 
   testWidgets('考える間を過ぎて未回答でも責めず、履歴には載せない。設定の秒数が反映される', (tester) async {

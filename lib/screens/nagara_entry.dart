@@ -204,10 +204,11 @@ class NagaraStartScreen extends ConsumerWidget {
   }
 }
 
-/// ながらセッション本体。誤答は通常の解答と同じ経路(進捗・日次・履歴・コイン)に記録する。
+/// ながらセッション本体。タップで答えた解答(正解・誤答とも)は通常の解答と同じ経路(進捗・日次・履歴・コイン)に記録する。
 ///
 /// 間違いノートは履歴から取り込むので、履歴に載せれば自動で反映される。
-/// 正解した解答は kit のコールバックで個別に返らないため、ここでは記録しない(PR 本文を参照)。
+/// 記録は kit の `onAnswered` に一本化する(`onWrongAnswer` は使わず二重記録を避ける)。
+/// 未回答とスキップは `onAnswered` が呼ばれないので記録しない。
 class NagaraSessionScreen extends ConsumerStatefulWidget {
   const NagaraSessionScreen({
     super.key,
@@ -226,7 +227,7 @@ class _NagaraSessionScreenState extends ConsumerState<NagaraSessionScreen> {
   late final List<NagaraQuestion> _nagara = toNagaraQuestions(widget.questions);
   late final Map<String, Question> _byQid = {for (final q in widget.questions) q.qid: q};
 
-  Future<void> _onWrong(NagaraQuestion nq, int chosen) async {
+  Future<void> _onAnswered(NagaraQuestion nq, int chosen, bool correct) async {
     final q = _byQid[nq.id];
     if (q == null) return;
     // await をまたいで ref を触らないよう、先に取っておく。
@@ -235,8 +236,8 @@ class _NagaraSessionScreenState extends ConsumerState<NagaraSessionScreen> {
     final coins = ref.read(coinProvider.notifier);
     try {
       final daily = recordDailyAnswer(ref);
-      await progress.recordAnswer(q.qid, correct: false);
-      await history.record(q, correct: false);
+      await progress.recordAnswer(q.qid, correct: correct);
+      await history.record(q, correct: correct);
       await coins.grant(CoinEvent.newQuestion(q.qid));
       await daily;
     } catch (_) {
@@ -251,7 +252,7 @@ class _NagaraSessionScreenState extends ConsumerState<NagaraSessionScreen> {
           child: NagaraSessionView(
             questions: _nagara,
             maxQuestions: widget.maxQuestions,
-            onWrongAnswer: _onWrong,
+            onAnswered: _onAnswered,
             onClose: () => Navigator.of(context).maybePop(),
           ),
         ),
