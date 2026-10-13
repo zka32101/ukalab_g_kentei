@@ -42,10 +42,10 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
             </intent-filter>
         </receiver>
-        <!-- AdMob（Google公式のテストアプリID。本番公開前に実際のIDへ差し替える）。 -->
+        <!-- AdMob アプリID（うかラボ G検定・Android）。広告ユニットは lib/main.dart。 -->
         <meta-data
             android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+            android:value="ca-app-pub-5058227312086483~6117400873" />
     </application>
     <!-- Required to query activities that can process text, see:
          https://developer.android.com/training/package-visibility and

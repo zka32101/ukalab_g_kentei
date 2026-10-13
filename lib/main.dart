@@ -25,7 +25,7 @@ import 'services/local_reminder_notifier.dart';
 import 'services/no_ads_backend.dart';
 
 /// Google公式のテスト広告ユニットID。本番公開前に実際のIDへ差し替える（決定35）。
-AdUnitIds _testAdUnitIds() => kIsWeb
+AdUnitIds _adUnitIds() => kIsWeb
     // Web には広告SDKが無く、広告は出さない（NoAdsBackend）。リリースビルドでテストIDを
     // 使うと AdGate が例外にするため、Web では空のIDにする。
     ? const AdUnitIds(banner: '', interstitial: '', rewarded: '')
@@ -34,6 +34,14 @@ AdUnitIds _testAdUnitIds() => kIsWeb
         banner: 'ca-app-pub-3940256099942544/2934735716',
         interstitial: 'ca-app-pub-3940256099942544/4411468910',
         rewarded: 'ca-app-pub-3940256099942544/1712485313',
+      )
+    // Android: リリースビルドだけ本番の広告ユニット、それ以外（デバッグ・profile）は
+    // テスト広告。開発中に本物の広告を表示・クリックして不正クリック扱いになるのを避ける。
+    : kReleaseMode
+    ? const AdUnitIds(
+        banner: 'ca-app-pub-5058227312086483/8168849142',
+        interstitial: 'ca-app-pub-5058227312086483/8987106793',
+        rewarded: 'ca-app-pub-5058227312086483/8085088669',
       )
     : const AdUnitIds(
         banner: 'ca-app-pub-3940256099942544/6300978111',
@@ -88,7 +96,7 @@ void main() async {
 
   // 広告（AdMob、決定35）。noads/premiumの間は何も表示しない。
   final adGate = await AdGate.init(
-    config: AdConfig(unitIds: _testAdUnitIds()),
+    config: AdConfig(unitIds: _adUnitIds()),
     // Web には広告SDK（google_mobile_ads）が無いため、広告を出さない実装にする。
     backend: kIsWeb ? NoAdsBackend() : null,
     adsHidden: () => entitlementService.state.adsHidden,
