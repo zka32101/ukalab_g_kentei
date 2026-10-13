@@ -9,6 +9,8 @@ import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/exam_repository.dart';
 import '../widgets/oshi_card.dart';
+import '../widgets/oshi_home_cards.dart';
+import 'mistake_note_screen.dart';
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
 import 'boundary_screen.dart';
@@ -98,6 +100,11 @@ class HomeScreen extends ConsumerWidget {
             totalQuestions: questions.length,
             examDate: userDate ?? (exam.examDates.isEmpty ? null : exam.examDates.first),
           ),
+          const SizedBox(height: 8),
+          // 推しの一言(無料)。タップで別の一言。
+          OshiMessageCard(
+            examDate: userDate ?? (exam.examDates.isEmpty ? null : exam.examDates.first),
+          ),
           if (aiNewsItems.isNotEmpty) ...[
             const SizedBox(height: 16),
             AiNewsCard(
@@ -137,9 +144,23 @@ class HomeScreen extends ConsumerWidget {
           const DailyMissionCard(),
           const StudyReminderCard(),
           const SizedBox(height: 16),
+          // 週間ふりかえり(無料。今週できたことだけを見せる)。
+          WeeklyRecapSection(exam: exam, questions: questions),
+          const SizedBox(height: 16),
           PremiumPracticeCards(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
           CoreFeaturesCard(exam: exam, questions: questions, terms: terms),
+          const SizedBox(height: 16),
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.edit_note_outlined),
+              title: const Text('間違いノート'),
+              subtitle: const Text('間違えた問題を見返して、解き直せます。'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () =>
+                  openMistakeNote(context, exam: exam, questions: questions, terms: terms),
+            ),
+          ),
           const SizedBox(height: 16),
           StudyNotesHomeCards(loadQuestions: () async => questions, detailBuilder: _detailBuilder),
           const SizedBox(height: 16),

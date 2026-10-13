@@ -6,12 +6,13 @@ import 'package:ukalab_core/ukalab_core.dart';
 
 import 'core_features.dart';
 import 'history_store.dart';
+import 'mistake_notes.dart';
 import 'progress_store.dart';
 
 /// 設定タブの「データの管理」（書き出し・読み込み・リセット）の対象。
 ///
 /// 学習進捗（解答済みの問題・模擬試験の合格・連続学習日数）、解答履歴、
-/// デイリーミッション（目標・達成履歴）、自分用メモ・試験当日チェックリストのチェック状態が対象。試験日・ブックマークは設定・整理物として含めない。
+/// デイリーミッション（目標・達成履歴）、自分用メモ・試験当日チェックリストのチェック状態・間違いノートが対象。試験日・ブックマークは設定・整理物として含めない。
 final List<DataPart> gKenteiDataParts = [
   achievementUnlockDataPart,
   learnedTermsDataPart(LearnedTermsStore('g_kentei')),
@@ -73,4 +74,6 @@ final List<DataPart> gKenteiDataParts = [
         ref.read(checklistProvider.notifier).restore((json as List).cast<String>()),
     reset: (ref) => ref.read(checklistProvider.notifier).reset(),
   ),
+  // 間違いノート(間違えた問題ID・日時・原因・分野・回数。端末内)。
+  mistakeNoteDataPart(mistakeNoteStore),
 ];
