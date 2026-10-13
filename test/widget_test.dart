@@ -37,6 +37,15 @@ Future<Widget> _app() async => ProviderScope(
       ),
     );
 
+/// 体験ラボは初期状態で畳まれているので、開いてから入口を探す。
+Future<void> _expandLab(WidgetTester tester) async {
+  if (find.text('AIと法律の境界線').evaluate().isNotEmpty) return;
+  await tester.ensureVisible(find.text('体験ラボ'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('体験ラボ'));
+  await tester.pumpAndSettle();
+}
+
 void main() {
   testWidgets('起動して問題データを読み込み、ホーム画面が表示される', (tester) async {
     // assets からの読み込みは実際の非同期I/Oのため、pump だけでは
@@ -90,6 +99,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('AIと法律の境界線'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('AIと法律の境界線'));
@@ -111,6 +121,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('予測→実行'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('予測→実行'));
@@ -133,6 +144,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('推しの答案を添削'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('推しの答案を添削'));
@@ -186,6 +198,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('学習の失敗図鑑'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('学習の失敗図鑑'));
@@ -254,6 +267,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('評価指標ラボ'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('評価指標ラボ'));
@@ -277,6 +291,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('手法の選び方'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('手法の選び方'));
@@ -300,6 +315,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('機械学習ラボ'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('機械学習ラボ'));
@@ -333,6 +349,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('画像認識の中身を見る'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('画像認識の中身を見る'));
@@ -354,6 +371,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('Transformerの注意の可視化'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Transformerの注意の可視化'));
@@ -375,6 +393,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('ニューラルネット組み立て'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('ニューラルネット組み立て'));
@@ -396,6 +415,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('AI倫理ケース'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('AI倫理ケース'));
@@ -419,6 +439,7 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    await _expandLab(tester);
     await tester.ensureVisible(find.text('AIプロジェクト経営モード'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('AIプロジェクト経営モード'));

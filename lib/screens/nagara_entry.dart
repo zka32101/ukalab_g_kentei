@@ -96,17 +96,13 @@ class NagaraEntryCard extends StatelessWidget {
   final List<Term> terms;
 
   @override
-  Widget build(BuildContext context) => Card(
-        child: ListTile(
-          leading: const Icon(Icons.headphones_outlined),
-          title: const Text('ながらセッション'),
-          subtitle: const Text('耳で聞きながら、問題が自動で進みます。画面が点いている間だけ動きます。'),
-          trailing: const Icon(Icons.chevron_right),
-          onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
-            builder: (_) =>
-                NagaraStartScreen(exam: exam, questions: questions),
-          )),
-        ),
+  Widget build(BuildContext context) => HomeMenuTile(
+        icon: Icons.headphones_outlined,
+        title: 'ながらセッション',
+        subtitle: '耳で聞きながら、問題が自動で進みます。画面が点いている間だけ動きます。',
+        onTap: () => Navigator.of(context).push(MaterialPageRoute<void>(
+          builder: (_) => NagaraStartScreen(exam: exam, questions: questions),
+        )),
       );
 }
 
