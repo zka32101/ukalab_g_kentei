@@ -1,5 +1,6 @@
 import 'package:app_common_kit/app_common_kit.dart';
 import 'package:app_common_kit/hands_free_tts.dart';
+import 'package:ukalab_core/answer_feedback.dart' show AnswerFeedbackPanel;
 import 'package:ukalab_core/daily_goal.dart' show recordDailyAnswer;
 import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
@@ -236,6 +237,16 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
                 onTermTap: _onTermTap,
               ),
               sourceRef: q.sourceRef,
+            ),
+            const SizedBox(height: 12),
+            // 不正解のときだけ表示される（原因ラベル・違いの比較・対策）。
+            AnswerFeedbackPanel(
+              key: ValueKey('feedback-${q.qid}'),
+              question: q,
+              selectedIndex: _selected,
+              terms: widget.terms,
+              includeCalculation: false,
+              onCause: (c) => ref.read(historyProvider.notifier).setCause(q.qid, c),
             ),
             const SizedBox(height: 12),
             QuestionMemoField(key: ValueKey(q.qid), qid: q.qid),
