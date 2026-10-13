@@ -136,6 +136,8 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => openMistakeNote(context,
                 exam: exam!, questions: questions, terms: terms),
           ),
+        const Divider(height: 24),
+        const _NagaraSettingsTiles(),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
         const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],
@@ -169,5 +171,91 @@ class SettingsScreen extends ConsumerWidget {
     if (!context.mounted) return;
     final message = state.adsHidden ? '購入を復元しました。' : '復元できる購入がありませんでした。';
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+  }
+}
+
+/// ながらセッションの設定(考える間・次までの間・自動で次へ・解説を読む)。
+/// ラベルと候補値は app_common_kit のもの。ながら学習モードのオン/オフとは独立に使える。
+class _NagaraSettingsTiles extends ConsumerWidget {
+  const _NagaraSettingsTiles();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final s = ref.watch(handsFreeProvider);
+    final notifier = ref.read(handsFreeProvider.notifier);
+    final t = KitStrings.of(context).nagara;
+    return Column(
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text('ながらセッション', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
+        SwitchListTile(
+          title: const Text('解説を読む'),
+          subtitle: const Text('ながらセッションで、答えのあとに解説も読み上げます。'),
+          value: s.speakExplanation,
+          onChanged: notifier.setSpeakExplanation,
+        ),
+        _SecondsTile(
+          key: const ValueKey('nagara-think'),
+          title: t.settingsThinkSeconds,
+          value: s.thinkSeconds,
+          options: HandsFreeSettings.thinkSecondsOptions,
+          label: t.secondsOption,
+          onChanged: notifier.setThinkSeconds,
+        ),
+        _SecondsTile(
+          key: const ValueKey('nagara-between'),
+          title: t.settingsBetweenSeconds,
+          value: s.betweenSeconds,
+          options: HandsFreeSettings.betweenSecondsOptions,
+          label: t.secondsOption,
+          onChanged: notifier.setBetweenSeconds,
+        ),
+        SwitchListTile(
+          title: Text(t.settingsAutoAdvance),
+          value: s.autoAdvance,
+          onChanged: notifier.setAutoAdvance,
+        ),
+      ],
+    );
+  }
+}
+
+class _SecondsTile extends StatelessWidget {
+  const _SecondsTile({
+    super.key,
+    required this.title,
+    required this.value,
+    required this.options,
+    required this.label,
+    required this.onChanged,
+  });
+
+  final String title;
+  final int value;
+  final List<int> options;
+  final String Function(int seconds) label;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    // 保存値が候補にない場合も、いまの値を選択肢に含めて表示を壊さない。
+    final items = {...options, value}.toList()..sort();
+    return ListTile(
+      title: Text(title),
+      trailing: DropdownButton<int>(
+        value: value,
+        items: [
+          for (final v in items) DropdownMenuItem(value: v, child: Text(label(v))),
+        ],
+        onChanged: (v) {
+          if (v != null) onChanged(v);
+        },
+      ),
+    );
   }
 }

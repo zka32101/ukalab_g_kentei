@@ -11,6 +11,7 @@ import '../data/exam_repository.dart';
 import '../widgets/oshi_card.dart';
 import '../widgets/oshi_home_cards.dart';
 import 'mistake_note_screen.dart';
+import 'nagara_entry.dart';
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
 import 'boundary_screen.dart';
@@ -162,6 +163,9 @@ class HomeScreen extends ConsumerWidget {
                   openMistakeNote(context, exam: exam, questions: questions, terms: terms),
             ),
           ),
+          const SizedBox(height: 16),
+          // ながらセッション(無料。耳で聞いて自動で進む)。
+          NagaraEntryCard(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
           StudyNotesHomeCards(loadQuestions: () async => questions, detailBuilder: _detailBuilder),
           const SizedBox(height: 16),
