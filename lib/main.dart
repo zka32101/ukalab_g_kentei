@@ -228,7 +228,7 @@ class _RootPage extends ConsumerWidget {
             LearnScreen(questions: questions, terms: data.terms),
             MockExamScreen(exam: data.exam, questions: questions),
             RecordScreen(exam: data.exam, questions: questions),
-            SettingsScreen(questions: questions),
+            SettingsScreen(questions: questions, exam: data.exam, terms: data.terms),
           ],
         );
       },

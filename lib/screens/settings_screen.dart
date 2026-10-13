@@ -4,7 +4,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ui.dart' show DataManagementSection;
-import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
+import 'package:ukalab_core/ukalab_core.dart' show ExamConfig, Question, Term, historyCsv;
 
 import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromoSection;
 import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
@@ -13,11 +13,21 @@ import 'package:ukalab_core/exam_date.dart';
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
 import 'exam_prep_entry.dart';
+import 'mistake_note_screen.dart';
 
 /// 「設定」タブ。課金（決定35）の購入・復元を提供する。広告はnoads/premiumの
 /// どちらかを持つと自動的に非表示になる（`AdGate.adsHidden`）。
 class SettingsScreen extends ConsumerWidget {
-  const SettingsScreen({super.key, this.questions = const []});
+  const SettingsScreen({
+    super.key,
+    this.questions = const [],
+    this.exam,
+    this.terms = const [],
+  });
+
+  /// 間違いノートの「解き直す」で演習画面を開くために使う。省略時は間違いノートの入口を出さない。
+  final ExamConfig? exam;
+  final List<Term> terms;
 
   /// 履歴CSVの分野集計で、記録に章が無い旧データを補うために使う。
   final List<Question> questions;
@@ -117,6 +127,15 @@ class SettingsScreen extends ConsumerWidget {
               '書き出し・読み込み・リセットができます。',
         ),
         CoreFeatureSettingsTiles(questions: questions),
+        if (exam != null)
+          ListTile(
+            leading: const Icon(Icons.edit_note_outlined),
+            title: const Text('間違いノート'),
+            subtitle: const Text('間違えた問題を見返して、解き直せます。'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => openMistakeNote(context,
+                exam: exam!, questions: questions, terms: terms),
+          ),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
         const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],
