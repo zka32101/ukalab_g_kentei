@@ -82,6 +82,9 @@ void main() {
         .read(examDateProvider.notifier)
         .setDate(_now.add(const Duration(days: 3)));
     await tester.pumpAndSettle();
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+    expect(find.text('試験日の設定'), findsNothing);
     expect(find.text(_chip(3)), findsOneWidget);
   });
 }
