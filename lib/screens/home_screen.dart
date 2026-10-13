@@ -9,6 +9,7 @@ import 'package:ukalab_core/daily_goal.dart' show DailyMissionCard;
 import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/exam_repository.dart';
+import '../widgets/core_v069_home_cards.dart';
 import '../widgets/oshi_card.dart';
 import '../widgets/oshi_home_cards.dart';
 import 'mistake_note_screen.dart';
@@ -208,6 +209,8 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const DailyMissionCard(),
+                  // 今日の復習(無料。間違いノートから忘れる頃の問題を数える)。
+                  TodayReviewSection(exam: exam, questions: questions, terms: terms),
                   const StudyReminderCard(),
                   // ながらセッション(無料。耳で聞いて自動で進む)。
                   Padding(
@@ -262,6 +265,10 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   // 週間ふりかえり(無料。今週できたことだけを見せる)。
                   WeeklyRecapSection(exam: exam, questions: questions),
+                  // 推しの成長(無料。累計の積み重ねへの一言と、節目の祝福)。
+                  const OshiGrowthSection(),
+                  // 解答履歴からの分野別の分析(無料。履歴があるときだけ)。
+                  MockExamAnalysisSection(exam: exam),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(16),

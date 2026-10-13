@@ -11,6 +11,7 @@ import 'package:ukalab_core/ukalab_core.dart';
 import '../data/history_store.dart';
 import '../data/mistake_notes.dart';
 import '../data/progress_store.dart';
+import '../data/review_schedule.dart';
 
 /// ながらセッション1回あたりの上限問数（ひと続きで聞きすぎないための休憩の目安）。
 const int kNagaraMaxQuestions = 20;
@@ -233,7 +234,9 @@ class _NagaraSessionScreenState extends ConsumerState<NagaraSessionScreen> {
     try {
       final daily = recordDailyAnswer(ref);
       await progress.recordAnswer(q.qid, correct: correct);
-      await history.record(q, correct: correct);
+      final at = DateTime.now();
+      await applyReviewResult(q.qid, correct: correct, at: at);
+      await history.record(q, correct: correct, at: at);
       await coins.grant(CoinEvent.newQuestion(q.qid));
       await daily;
     } catch (_) {

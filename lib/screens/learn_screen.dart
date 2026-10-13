@@ -9,6 +9,7 @@ import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/history_store.dart';
 import '../data/progress_store.dart';
+import '../data/review_schedule.dart';
 
 /// 「学ぶ」タブ: 短い演習セッション（最小実装。間隔反復・弱点優先は後続）。
 class LearnScreen extends ConsumerStatefulWidget {
@@ -82,10 +83,14 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
     final correct = i == q.answerIndex;
     await ref.read(progressProvider.notifier).recordAnswer(q.qid, correct: correct);
     await recordDailyAnswer(ref);
+    // 履歴と同じ時刻で復習予定に反映する(先に反映し、ホームが履歴の更新で読み直すときに間に合わせる)。
+    final at = DateTime.now();
+    await applyReviewResult(q.qid, correct: correct, at: at);
     await ref.read(historyProvider.notifier).record(
           q,
           correct: correct,
-          ms: DateTime.now().difference(_shownAt).inMilliseconds,
+          ms: at.difference(_shownAt).inMilliseconds,
+          at: at,
         );
     await ref.read(coinProvider.notifier).grant(CoinEvent.newQuestion(q.qid));
     final streakDays = ref.read(progressProvider).streakDays;
