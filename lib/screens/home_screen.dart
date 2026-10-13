@@ -149,6 +149,7 @@ class HomeScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           PremiumPracticeCards(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
+          ExamCountdownEntry(exam: exam),
           CoreFeaturesCard(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
           Card(

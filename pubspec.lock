@@ -771,8 +771,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "v0.61.0"
-      resolved-ref: 4b3ea0ab96133e7ff4dfe25857900d3eef648f52
+      ref: "v0.63.0"
+      resolved-ref: f2bac08ca39046271fed898bdf6f58ab8c32cc8f
       url: "https://github.com/zka32101/ukalab_core.git"
     source: git
     version: "0.61.0"
