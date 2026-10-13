@@ -20,6 +20,7 @@ import 'method_choice_screen.dart';
 import 'ml_lab_screen.dart';
 import 'nn_builder_screen.dart';
 import 'pace_run_screen.dart';
+import 'exam_prep_entry.dart';
 import 'premium_practice_cards.dart';
 import 'predict_run_screen.dart';
 import 'reading_screen.dart';
@@ -137,6 +138,8 @@ class HomeScreen extends ConsumerWidget {
           const StudyReminderCard(),
           const SizedBox(height: 16),
           PremiumPracticeCards(exam: exam, questions: questions, terms: terms),
+          const SizedBox(height: 16),
+          CoreFeaturesCard(exam: exam, questions: questions, terms: terms),
           const SizedBox(height: 16),
           StudyNotesHomeCards(loadQuestions: () async => questions, detailBuilder: _detailBuilder),
           const SizedBox(height: 16),

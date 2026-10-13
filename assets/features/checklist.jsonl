@@ -1,0 +1,8 @@
+{"itemId":"gk-env-pc","examId":"g_kentei","category":"environment","label":"受験に使うパソコン・ブラウザなどの動作条件を確かめた","venue":"online"}
+{"itemId":"gk-env-net","examId":"g_kentei","category":"environment","label":"通信環境が安定しているか確かめた","venue":"online"}
+{"itemId":"gk-env-room","examId":"g_kentei","category":"environment","label":"受験する場所や部屋の条件を確かめた","venue":"online"}
+{"itemId":"gk-env-precheck","examId":"g_kentei","category":"environment","label":"オンライン受験の事前確認(動作確認など)の案内を確かめた","venue":"online"}
+{"itemId":"gk-adm-ticket","examId":"g_kentei","category":"admission","label":"受験に必要な案内・ログイン情報を手元に用意した","venue":"online"}
+{"itemId":"gk-adm-id","examId":"g_kentei","category":"admission","label":"本人確認の方法と必要なものを確かめた","venue":"online"}
+{"itemId":"gk-bel-allowed","examId":"g_kentei","category":"belongings","label":"手元に置いてよい物・いけない物を確かめた","venue":"online"}
+{"itemId":"gk-bel-time","examId":"g_kentei","category":"belongings","label":"開始時刻と、余裕をもった準備の時間を確かめた","venue":"online"}

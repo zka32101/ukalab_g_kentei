@@ -12,6 +12,7 @@ import 'package:ukalab_core/reminder.dart' show ReminderSettingsSection;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
+import 'exam_prep_entry.dart';
 
 /// 「設定」タブ。課金（決定35）の購入・復元を提供する。広告はnoads/premiumの
 /// どちらかを持つと自動的に非表示になる（`AdGate.adsHidden`）。
@@ -115,6 +116,7 @@ class SettingsScreen extends ConsumerWidget {
           description: '学習進捗・解答履歴・自分用メモは、試験日・ブックマークを除いて、'
               '書き出し・読み込み・リセットができます。',
         ),
+        CoreFeatureSettingsTiles(questions: questions),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
         const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],

@@ -1,0 +1,3 @@
+{"entryId":"u-2026-10-12-fact-check","examId":"g_kentei","date":"2026-10-12","kind":"correction","title":"年号・法令に関する記述を、一次情報の確認にもとづいて最小限修正","detail":"確認できた範囲の記述だけを直しました。最新の内容は公式の案内でもご確認ください。"}
+{"entryId":"u-2026-10-11-syllabus","examId":"g_kentei","date":"2026-10-11","kind":"syllabusChange","title":"公式シラバスの改訂で削除されたキーワードの問題を差し替え","affectedQuestions":3,"versionRef":"公式シラバス v1.4","detail":"削除された3キーワードの問題を、現行の範囲の問題に入れ替えました。"}
+{"entryId":"u-2026-10-11-questions","examId":"g_kentei","date":"2026-10-11","kind":"newContent","title":"問題の見直しと追加(600問から690問へ)","affectedQuestions":90,"detail":"正解の位置の偏りを整え、不適切型・空欄補充・論点の薄い分野の問題を追加しました。"}
