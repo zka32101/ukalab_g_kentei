@@ -26,6 +26,24 @@ final exam = ExamConfig.fromJson({
   ],
 });
 
+final timedExam = ExamConfig.fromJson({
+  'examId': 'g_kentei',
+  'name': 'テスト',
+  'audience': 'adult',
+  'subjects': [
+    {'subjectId': 'ml_overview', 'name': '機械学習の概要'},
+  ],
+  'levels': [
+    {
+      'levelId': 'standard',
+      'name': '標準',
+      'questionCount': 2,
+      'timeLimitSec': 60,
+      'passRule': {'totalPct': 50},
+    },
+  ],
+});
+
 List<Question> _questions() => [
       Question(
         qid: 'q1',
@@ -55,7 +73,7 @@ List<Question> _questions() => [
       ),
     ];
 
-Future<ProviderContainer> _pump(WidgetTester tester) async {
+Future<ProviderContainer> _pump(WidgetTester tester, {ExamConfig? examConfig, DateTime Function()? now}) async {
   SharedPreferences.setMockInitialValues({});
   final coin = CoinService(store: InMemoryCoinStore());
   await coin.load();
@@ -69,7 +87,11 @@ Future<ProviderContainer> _pump(WidgetTester tester) async {
   await tester.pumpWidget(UncontrolledProviderScope(
     container: container,
     child: MaterialApp(
-      home: Scaffold(body: MockExamScreen(exam: exam, questions: _questions())),
+      home: Scaffold(body: MockExamScreen(
+          exam: examConfig ?? exam,
+          questions: _questions(),
+          now: now ?? DateTime.now,
+        )),
     ),
   ));
   await tester.pump();
@@ -109,5 +131,31 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(c.read(coinProvider).balance, CoinRules.standard.mockDone);
+  });
+
+  testWidgets('制限時間があると残り時間が出て、時間切れで自動的に採点される', (tester) async {
+    var t = DateTime(2026, 1, 1);
+    final c = await _pump(tester, examConfig: timedExam, now: () => t);
+    await tester.tap(find.text('模擬試験を始める'));
+    await tester.pump();
+
+    expect(find.text('残り 01:00'), findsOneWidget);
+    t = t.add(const Duration(seconds: 10));
+    await tester.pump(const Duration(seconds: 1));
+    expect(find.text('残り 00:50'), findsOneWidget);
+
+    t = t.add(const Duration(seconds: 51));
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(find.text('残り 00:00'), findsNothing);
+    expect(find.text('次へ'), findsNothing);
+    expect(c.read(coinProvider).balance, CoinRules.standard.mockDone);
+  });
+
+  testWidgets('制限時間がない場合は残り時間を出さない', (tester) async {
+    await _pump(tester);
+    await tester.tap(find.text('模擬試験を始める'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('残り'), findsNothing);
   });
 }

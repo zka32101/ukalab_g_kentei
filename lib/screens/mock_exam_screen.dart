@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:app_common_kit/app_common_kit.dart';
 import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
@@ -15,10 +17,18 @@ import '../widgets/oshi_card.dart';
 /// 実施でコイン+10、合格で+50(資格ごとに最初の1回のみ)が付与される
 /// （決定67〜77）。合格すると、習得度と合わせて「準備完了」の判定も行う。
 class MockExamScreen extends ConsumerStatefulWidget {
-  const MockExamScreen({super.key, required this.exam, required this.questions});
+  const MockExamScreen({
+    super.key,
+    required this.exam,
+    required this.questions,
+    this.now = DateTime.now,
+  });
 
   final ExamConfig exam;
   final List<Question> questions;
+
+  /// 現在時刻（テストで差し替える）。
+  final DateTime Function() now;
 
   @override
   ConsumerState<MockExamScreen> createState() => _MockExamScreenState();
@@ -36,6 +46,12 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
   MockExamResult? _result;
   ExamStatsSummary? _statsSummary;
 
+  /// 制限時間の締切（標準の模擬のみ。カスタムは制限なし）。開始時刻との差で
+  /// 計算するので、バックグラウンドに回っても時間は止まらない。
+  DateTime? _deadline;
+  Timer? _ticker;
+  Duration _remaining = Duration.zero;
+
   /// 問題ごとの選択肢の表示順（qid→実際のchoicesインデックスの並び）。
   /// 正解が常に先頭に来てしまわないよう、問題ごとに1回だけシャッフルする。
   final Map<String, List<int>> _choiceOrder = {};
@@ -44,6 +60,43 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
         q.qid,
         () => List.generate(q.choices.length, (i) => i)..shuffle(),
       );
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  void _startTimer(int? limitSec) {
+    _ticker?.cancel();
+    if (limitSec == null || limitSec <= 0) {
+      _deadline = null;
+      return;
+    }
+    _deadline = widget.now().add(Duration(seconds: limitSec));
+    _remaining = Duration(seconds: limitSec);
+    _ticker = Timer.periodic(const Duration(seconds: 1), (_) => _tick());
+  }
+
+  void _tick() {
+    final deadline = _deadline;
+    if (deadline == null || _result != null) return;
+    final left = deadline.difference(widget.now());
+    if (left <= Duration.zero) {
+      _ticker?.cancel();
+      setState(() => _remaining = Duration.zero);
+      _finish();
+    } else {
+      setState(() => _remaining = left);
+    }
+  }
+
+  String _remainingText() {
+    final sec = _remaining.inSeconds;
+    final m = (sec ~/ 60).toString().padLeft(2, '0');
+    final s = (sec % 60).toString().padLeft(2, '0');
+    return '残り $m:$s';
+  }
 
   bool _isPremium(WidgetRef ref) => canUsePremiumFeature(
         PremiumFeature.mockExamHistory,
@@ -66,6 +119,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       _result = null;
       _statsSummary = null;
     });
+    _startTimer(level.timeLimitSec);
   }
 
   void _startCustom(List<String> subjectIds, int count) {
@@ -83,6 +137,7 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       _result = null;
       _statsSummary = null;
     });
+    _startTimer(null);
   }
 
   Future<void> _openCustomSetup() async {
@@ -99,6 +154,8 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
   }
 
   Future<void> _finish() async {
+    if (_result != null) return;
+    _ticker?.cancel();
     final rule = widget.exam.levels.first.passRule;
     final result = scoreMockExam(questions: _picked, answers: _answers, rule: rule);
     setState(() => _result = result);
@@ -255,6 +312,14 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (_deadline != null) ...[
+            Text(
+              _remainingText(),
+              textAlign: TextAlign.end,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+          ],
           QuestionCard(
             text: q.prompt,
             index: _index + 1,
