@@ -3,13 +3,12 @@ import 'dart:io' show Platform;
 
 import 'package:app_common_kit/app_common_kit.dart' hide SettingsScreen;
 import 'package:ukalab_core/ui.dart';
-import 'package:cross_promo_kit/cross_promo_kit.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromo;
 import 'package:ukalab_core/daily_goal.dart';
 import 'package:ukalab_core/achievements.dart'
     show achievementUnlockOverrides, dailyGoalAchievementsOverride, watchAchievementUnlocks;
@@ -63,12 +62,8 @@ void main() async {
     );
   });
 
-  // 相互紹介用の Firebase 初期化。firebase_options / google-services.json の配置前や
-  // 失敗時もアプリ起動を止めない（別の try/catch）。失敗なら紹介は空のまま何も出ない。
-  try {
-    await Firebase.initializeApp();
-  } catch (_) {}
-  unawaited(CrossPromoService.init());
+  // 相互紹介（Firebase 初期化と Remote Config 取得）。失敗しても起動を止めない（core 側で握りつぶす）。
+  unawaited(UkalabCrossPromo.init());
 
   // 学習コイン・衣装（app_common_kit）。財布・衣装台帳はアプリごとに端末内保存
   // （決定67〜77）。ショップには通常衣装（G検定、コイン購入）だけを並べる。

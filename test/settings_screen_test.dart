@@ -1,5 +1,4 @@
 import 'package:app_common_kit/app_common_kit.dart' hide SettingsScreen;
-import 'package:cross_promo_kit/cross_promo_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -82,44 +81,11 @@ void main() {
     expect(find.text('プレミアムを購入済みです'), findsOneWidget);
   });
 
-  testWidgets('相互紹介は、掲載リストが空（Firebase無し）なら何も出ず例外にもならない', (tester) async {
+  testWidgets('設定画面の相互紹介は、掲載リストが空（Firebase無し）なら何も出ず例外にもならない', (tester) async {
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
 
     expect(tester.takeException(), isNull);
     expect(find.text('他のアプリもチェック！'), findsNothing);
-  });
-
-  testWidgets('相互紹介の掲載があれば、設定画面に表示しても例外にならない', (tester) async {
-    await tester.pumpWidget(ProviderScope(
-      overrides: [
-        entitlementServiceProvider.overrideWithValue(_service()),
-        handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
-        ...studyNotesTestOverrides(),
-      ],
-      child: const MaterialApp(
-        home: Scaffold(
-          body: CrossPromoSection(
-            currentAppId: 'com.yourwish.ukalab.g_kentei',
-            currentCategory: 'うかラボ',
-            appsOverride: [
-              PromotedApp(
-                id: 'com.example.ukalab.other',
-                name: 'うかラボ 別資格',
-                tagline: 'テスト',
-                iconUrl: '',
-                storeUrl: 'https://example.com/other',
-                category: 'うかラボ',
-              ),
-            ],
-          ),
-        ),
-      ),
-    ));
-    await tester.pumpAndSettle();
-
-    expect(tester.takeException(), isNull);
-    expect(find.text('他のアプリもチェック！'), findsOneWidget);
-    expect(find.text('うかラボ 別資格'), findsOneWidget);
   });
 }

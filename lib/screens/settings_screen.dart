@@ -1,11 +1,11 @@
 import 'package:app_common_kit/app_common_kit.dart';
-import 'package:cross_promo_kit/cross_promo_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ui.dart' show DataManagementSection;
 import 'package:ukalab_core/ukalab_core.dart' show Question, historyCsv;
 
+import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromoSection;
 import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
 import 'package:ukalab_core/reminder.dart' show ReminderSettingsSection;
 import 'package:ukalab_core/exam_date.dart';
@@ -110,10 +110,7 @@ class SettingsScreen extends ConsumerWidget {
               '書き出し・読み込み・リセットができます。',
         ),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
-        const CrossPromoSection(
-          currentAppId: 'com.yourwish.ukalab.g_kentei',
-          currentCategory: 'うかラボ',
-        ),
+        const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],
     );
   }
