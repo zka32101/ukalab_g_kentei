@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/progress_store.dart';
+import 'oshi_medal_button.dart';
 
 /// 網羅率＝解いた問題の種類数÷全問題数、正答率＝qidごとの最新の正誤に基づく
 /// 正答率から習得度の入力を作る。`ReadinessRule.isReady` にそのまま渡せる。
@@ -48,17 +49,27 @@ class OshiCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(progressProvider);
     final now = DateTime.now();
-    return UkalabOshiCard(
-      cert: UkalabCert.gKentei,
-      stage: oshiStageFor(
-        distinctAnswered: progress.distinctAnswered,
-        totalQuestions: totalQuestions,
-        correct: progress.correctCount,
-      ),
-      appId: 'g_kentei',
-      examDate: examDate,
-      streakDays: progress.streakDays,
-      studiedToday: progress.lastStudyDay == studyDayKey(now),
+    // 共通キットのカードのメニューには項目を足せないため、メダルの入口はカードのすぐ下に置く。
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        UkalabOshiCard(
+          cert: UkalabCert.gKentei,
+          stage: oshiStageFor(
+            distinctAnswered: progress.distinctAnswered,
+            totalQuestions: totalQuestions,
+            correct: progress.correctCount,
+          ),
+          appId: 'g_kentei',
+          examDate: examDate,
+          streakDays: progress.streakDays,
+          studiedToday: progress.lastStudyDay == studyDayKey(now),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: OshiMedalButton(totalQuestions: totalQuestions),
+        ),
+      ],
     );
   }
 }
