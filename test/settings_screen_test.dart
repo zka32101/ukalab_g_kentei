@@ -80,4 +80,12 @@ void main() {
     expect(find.text('購入を復元しました。'), findsOneWidget);
     expect(find.text('プレミアムを購入済みです'), findsOneWidget);
   });
+
+  testWidgets('設定画面の相互紹介は、掲載リストが空（Firebase無し）なら何も出ず例外にもならない', (tester) async {
+    await tester.pumpWidget(_app(_service()));
+    await tester.pumpAndSettle();
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('他のアプリもチェック！'), findsNothing);
+  });
 }

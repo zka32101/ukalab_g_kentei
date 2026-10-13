@@ -1,3 +1,4 @@
+import 'dart:async' show unawaited;
 import 'dart:io' show Platform;
 
 import 'package:app_common_kit/app_common_kit.dart' hide SettingsScreen;
@@ -7,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromo;
 import 'package:ukalab_core/daily_goal.dart';
 import 'package:ukalab_core/achievements.dart'
     show achievementUnlockOverrides, dailyGoalAchievementsOverride, watchAchievementUnlocks;
@@ -65,6 +67,9 @@ void main() async {
       await rootBundle.loadString('assets/fonts/OFL.txt'),
     );
   });
+
+  // 相互紹介（Firebase 初期化と Remote Config 取得）。失敗しても起動を止めない（core 側で握りつぶす）。
+  unawaited(UkalabCrossPromo.init());
 
   // 学習コイン・衣装（app_common_kit）。財布・衣装台帳はアプリごとに端末内保存
   // （決定67〜77）。ショップには通常衣装（G検定、コイン購入）だけを並べる。
