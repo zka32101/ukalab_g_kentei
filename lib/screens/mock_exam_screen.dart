@@ -242,8 +242,8 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
               Text('模擬試験', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
               Text(
-                '本試験は${level.questionCount}問・${(level.timeLimitSec ?? 0) ~/ 60}分。'
-                '合格基準は非公開のため、正答率70%を目安に表示します。',
+                '本試験（2026年〜のオンライン試験）は約${level.questionCount}問・${(level.timeLimitSec ?? 0) ~/ 60}分（会場試験は120分）。'
+                '合格基準・分野別の出題比率は非公開のため、正答率70%・本アプリ設定の配分は目安（推定）です。',
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium,
               ),
