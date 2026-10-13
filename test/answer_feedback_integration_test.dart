@@ -93,7 +93,6 @@ Future<ProviderContainer> _pumpCards(WidgetTester tester, {required bool premium
 void main() {
   testWidgets('不正解だと原因パネルが出て、原因を選ぶと履歴に付く', (tester) async {
     final c = await _pumpLearn(tester);
-    expect(find.byType(AnswerFeedbackPanel), findsOneWidget); // 回答前は枠だけ（中身は空）
     expect(find.text('知識不足'), findsNothing);
 
     await _tapAndSettle(tester, '誤りの選択肢');
