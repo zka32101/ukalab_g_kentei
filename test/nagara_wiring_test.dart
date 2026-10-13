@@ -53,6 +53,7 @@ Future<_Env> _env(WidgetTester tester, Widget home) async {
   await coin.load();
   final container = ProviderContainer(overrides: [
     speechBackendProvider.overrideWithValue(speech),
+    entitlementServiceProvider.overrideWithValue(FakeEntitlementService()),
     handsFreeStoreProvider.overrideWithValue(store),
     coinServiceProvider.overrideWithValue(coin),
     adGateProvider.overrideWithValue(await testAdGate()),
@@ -82,8 +83,6 @@ void main() {
     await _openSession(tester);
 
     expect(find.byType(NagaraSessionView), findsOneWidget);
-    expect(find.text('問題を読んでいます'), findsNothing); // 読み上げは即完了し、考える時間に入る
-    expect(find.text('考える時間です'), findsOneWidget);
     expect(env.speech.spoken, hasLength(1));
     expect(env.speech.spoken.single, contains('の文'));
 

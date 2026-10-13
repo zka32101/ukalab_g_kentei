@@ -72,7 +72,6 @@ class SettingsScreen extends ConsumerWidget {
             value: handsFree.speakQuestion,
             onChanged: (v) => ref.read(handsFreeProvider.notifier).setSpeakQuestion(v),
           ),
-        const _NagaraSettingsTiles(),
         ExamDateTile(
           date: ref.watch(examDateProvider),
           onChanged: (d) => ref.read(examDateProvider.notifier).setDate(d),
@@ -137,6 +136,8 @@ class SettingsScreen extends ConsumerWidget {
             onTap: () => openMistakeNote(context,
                 exam: exam!, questions: questions, terms: terms),
           ),
+        const Divider(height: 24),
+        const _NagaraSettingsTiles(),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
         const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],
@@ -185,6 +186,13 @@ class _NagaraSettingsTiles extends ConsumerWidget {
     final t = KitStrings.of(context).nagara;
     return Column(
       children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text('ながらセッション', style: TextStyle(fontWeight: FontWeight.bold)),
+          ),
+        ),
         SwitchListTile(
           title: const Text('解説を読む'),
           subtitle: const Text('ながらセッションで、答えのあとに解説も読み上げます。'),
