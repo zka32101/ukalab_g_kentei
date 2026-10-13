@@ -67,7 +67,8 @@ void main() {
   testWidgets('各グループの見出しが表示される', (tester) async {
     await _boot(tester);
     for (final h in ['今日やること', '記録', '試験に向けて', '道具', '体験ラボ']) {
-      expect(find.text(h), findsOneWidget, reason: h);
+      // 「記録」は下のタブ名にもあるので、見出し部品の中で探す。
+      expect(find.widgetWithText(HomeSectionHeader, h), findsOneWidget, reason: h);
     }
     expect(find.byType(HomeSectionHeader), findsNWidgets(5));
   });
