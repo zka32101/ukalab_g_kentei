@@ -19,7 +19,7 @@ dependencies:
   ukalab_core:
     git:
       url: https://github.com/zka32101/ukalab_core.git
-      ref: v0.56.0
+      ref: v0.57.0
 
   # 推しのメダル・共有カードの画像を OS の共有シートで共有する。
   # CI の Flutter 3.35（Dart 3.9）で解決できるよう 12.x に留める（13.x は Dart 3.10 以上が必要）。
@@ -53,6 +53,7 @@ flutter:
     - assets/questions/
     - assets/terms/
     - assets/experience/
+    - assets/features/
     - assets/fonts/OFL.txt
   fonts:
     # BIZ UDPGothic（SIL OFL 1.1・モリサワ）。端末のフォント差で漢字の字形が変わらないよう同梱。
