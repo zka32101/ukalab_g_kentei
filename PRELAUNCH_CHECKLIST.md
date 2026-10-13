@@ -22,7 +22,7 @@
 
 ## 本番環境・運用の差し替え
 
-- [ ] `ops` 広告ユニットID・AdMobアプリIDをGoogle公式テスト用から実際のIDへ差し替え（決定35）
+- [x] `ops` 広告ユニットID・AdMobアプリIDをGoogle公式テスト用から実際のIDへ差し替え（決定35）。Android は 2026-10-13 に AdMob へ登録し、リリースビルドだけ本番ユニットを使う（`lib/main.dart`）。**残り**: iOS のアプリ・ユニット登録、Play 公開後に AdMob でストア情報を紐付けて審査を通す（それまで広告配信は制限される）
 - [ ] `ops` RevenueCatの実際のAPIキーを取得し、`FakeEntitlementService` → `RevenueCatEntitlementService`へ差し替え（決定35）
 - [ ] `ops` 価格（noads ¥480、premium ¥600/90日・¥1,000/30日・¥1,500買い切り）を運営者が最終確認（決定14）
 - [ ] `ops` Firebaseプロジェクトを作成し、`firestore.rules`・`firebase.json`をデプロイ。App Checkをenforceにしてから`FakeExamStatsService` → `FirebaseExamStatsService`へ差し替え（決定32）
