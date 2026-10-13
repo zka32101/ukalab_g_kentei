@@ -28,6 +28,14 @@ dependencies:
   flutter_local_notifications: ^19.4.0
   timezone: ^0.10.1
 
+  # うかラボ同士の相互紹介（Remote Config 配信）。タグ固定。firebase_* は kit の許容レンジ内
+  firebase_core: ^4.15.0
+  firebase_remote_config: ^6.7.0
+  cross_promo_kit:
+    git:
+      url: https://github.com/zka32101/cross_promo_kit
+      ref: v0.3.0
+
   # 進捗・コインの端末内保存
   shared_preferences: ">=2.3.0 <3.0.0"
 

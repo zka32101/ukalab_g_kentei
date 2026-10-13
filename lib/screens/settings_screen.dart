@@ -1,4 +1,5 @@
 import 'package:app_common_kit/app_common_kit.dart';
+import 'package:cross_promo_kit/cross_promo_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -107,6 +108,11 @@ class SettingsScreen extends ConsumerWidget {
           parts: gKenteiDataParts,
           description: '学習進捗・解答履歴・自分用メモは、試験日・ブックマークを除いて、'
               '書き出し・読み込み・リセットができます。',
+        ),
+        // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
+        const CrossPromoSection(
+          currentAppId: 'com.yourwish.ukalab.g_kentei',
+          currentCategory: 'うかラボ',
         ),
       ],
     );
