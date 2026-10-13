@@ -2,6 +2,7 @@ import 'package:app_common_kit/app_common_kit.dart' hide SettingsScreen;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:ukalab_g_kentei/screens/settings_screen.dart';
 
 import 'test_support.dart';
@@ -37,6 +38,21 @@ Widget _app(FakeEntitlementService service) => ProviderScope(
     );
 
 void main() {
+  testWidgets('バージョンは固定文字でなく、実際の版を表示する', (tester) async {
+    PackageInfo.setMockInitialValues(
+      appName: 'test',
+      packageName: 'com.example.test',
+      version: '9.8.7',
+      buildNumber: '42',
+      buildSignature: '',
+    );
+    await tester.pumpWidget(_app(_service()));
+    await tester.pumpAndSettle();
+
+    expect(find.text('9.8.7'), findsOneWidget);
+    expect(find.text('0.1.0'), findsNothing);
+  });
+
   testWidgets('無料の間は購入ボタンが出る', (tester) async {
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
