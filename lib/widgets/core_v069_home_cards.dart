@@ -127,7 +127,10 @@ class _OshiGrowthSectionState extends ConsumerState<OshiGrowthSection> {
   Future<void> _check() async {
     if (_checking) return;
     final route = ModalRoute.of(context);
-    if (!TickerMode.valuesOf(context).enabled || (route != null && !route.isCurrent)) return;
+    // CI の Flutter 3.35 には valuesOf が無いため of を使う(新しい版では非推奨)。
+    // ignore: deprecated_member_use
+    final visible = TickerMode.of(context);
+    if (!visible || (route != null && !route.isCurrent)) return;
     _checking = true;
     try {
       await ref.read(historyProvider.notifier).ready;
