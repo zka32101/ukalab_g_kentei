@@ -20,8 +20,8 @@ jobs:
       - run: flutter pub get
       - run: flutter analyze
       - run: flutter test
-      - name: 問題データの検証（出典必須・ID重複・正解一意性など）
-        run: dart run ukalab_core:validate_content assets/exam/g_kentei.json assets/questions/g_kentei.jsonl
+      - name: 問題データの検証（出典必須・ID重複・正解一意性・比較対象タグの参照先など）
+        run: dart run ukalab_core:validate_content assets/exam/g_kentei.json --terms assets/terms/g_kentei.jsonl assets/questions/g_kentei.jsonl
 
   web-e2e:
     runs-on: ubuntu-latest
