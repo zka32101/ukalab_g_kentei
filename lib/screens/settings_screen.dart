@@ -60,6 +60,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         const Divider(height: 24),
+        const TextScaleSetting(strings: TextScaleStrings.ja),
+        const Divider(height: 24),
         SwitchListTile(
           title: const Text('ながら学習モード'),
           subtitle: const Text('大きな選択肢ボタンで、問題を読み上げます。'),

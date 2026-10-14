@@ -37,6 +37,13 @@ Widget _app(FakeEntitlementService service) => ProviderScope(
       child: const MaterialApp(home: Scaffold(body: SettingsScreen())),
     );
 
+/// 設定画面は長い ListView。既定の小さな画面だと下の項目が組み立てられないので、縦長にする。
+void _tall(WidgetTester tester) {
+  tester.view.physicalSize = const Size(800, 3000);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.reset);
+}
+
 void main() {
   testWidgets('バージョンは固定文字でなく、実際の版を表示する', (tester) async {
     PackageInfo.setMockInitialValues(
@@ -46,6 +53,7 @@ void main() {
       buildNumber: '42',
       buildSignature: '',
     );
+    _tall(tester);
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
 
@@ -54,6 +62,7 @@ void main() {
   });
 
   testWidgets('無料の間は購入ボタンが出る', (tester) async {
+    _tall(tester);
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
 
@@ -64,6 +73,7 @@ void main() {
 
   testWidgets('購入すると購入済み表示になり、ボタンが消える', (tester) async {
     final service = _service();
+    _tall(tester);
     await tester.pumpWidget(_app(service));
     await tester.pumpAndSettle();
 
@@ -76,6 +86,7 @@ void main() {
   });
 
   testWidgets('復元できる購入がなければその旨を表示する', (tester) async {
+    _tall(tester);
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
 
@@ -87,6 +98,7 @@ void main() {
 
   testWidgets('復元できる購入があれば購入済み表示になる', (tester) async {
     final service = _service()..restorable = const EntitlementState(hasPremium: true);
+    _tall(tester);
     await tester.pumpWidget(_app(service));
     await tester.pumpAndSettle();
 
@@ -98,6 +110,7 @@ void main() {
   });
 
   testWidgets('設定画面の相互紹介は、掲載リストが空（Firebase無し）なら何も出ず例外にもならない', (tester) async {
+    _tall(tester);
     await tester.pumpWidget(_app(_service()));
     await tester.pumpAndSettle();
 

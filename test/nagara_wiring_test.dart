@@ -213,6 +213,10 @@ void main() {
   });
 
   testWidgets('設定: 考える間・次までの間・自動で次へ・解説を読む が保存される', (tester) async {
+    // 設定画面は長い ListView。項目が画面端で切れないよう、縦長にする。
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
     final env = await _env(tester, const SettingsScreen());
     final notifier = env.container.read(handsFreeProvider.notifier);
     await notifier.load();

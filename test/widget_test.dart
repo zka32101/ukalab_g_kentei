@@ -223,6 +223,10 @@ void main() {
   });
 
   testWidgets('設定タブで購入すると購入済み表示になる', (tester) async {
+    // 設定画面は長い ListView。既定の小さな画面だと下の項目が組み立てられないので、縦長にする。
+    tester.view.physicalSize = const Size(800, 3000);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
     await tester.runAsync(() async {
       await tester.pumpWidget(await _app());
       await Future.delayed(const Duration(milliseconds: 300));
