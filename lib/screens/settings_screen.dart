@@ -103,8 +103,8 @@ class SettingsScreen extends ConsumerWidget {
               return Column(
                 children: [
                   for (final offer in offers)
-                    ListTile(
-                      title: Text(offer.title),
+                    _WrapTile(
+                      title: offer.title,
                       trailing: FilledButton(
                         onPressed: () => _purchase(context, ref, offer),
                         child: Text(offer.priceString),
@@ -247,8 +247,8 @@ class _SecondsTile extends StatelessWidget {
   Widget build(BuildContext context) {
     // 保存値が候補にない場合も、いまの値を選択肢に含めて表示を壊さない。
     final items = {...options, value}.toList()..sort();
-    return ListTile(
-      title: Text(title),
+    return _WrapTile(
+      title: title,
       trailing: DropdownButton<int>(
         value: value,
         items: [
@@ -257,6 +257,37 @@ class _SecondsTile extends StatelessWidget {
         onChanged: (v) {
           if (v != null) onChanged(v);
         },
+      ),
+    );
+  }
+}
+
+/// 見出し＋右端の操作部品（選択欄・ボタン）の行。
+///
+/// ListTile の trailing だと、文字が大きいとき（端末の最大＋アプリ内「特大」＋小画面）に
+/// 操作部品が幅を使い切って見出しが消える。Wrap にして、収まらなければ操作部品を次の行へ送る。
+/// 操作部品そのものが画面幅を超えるほど大きいときだけ、収まる分だけ縮める。
+class _WrapTile extends StatelessWidget {
+  const _WrapTile({required this.title, required this.trailing});
+
+  final String title;
+  final Widget trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minHeight: 56),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          runSpacing: 4,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.bodyLarge),
+            FittedBox(fit: BoxFit.scaleDown, child: trailing),
+          ],
+        ),
       ),
     );
   }
