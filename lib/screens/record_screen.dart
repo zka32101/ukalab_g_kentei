@@ -6,6 +6,7 @@ import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/progress_store.dart';
 import '../data/subject_progress.dart';
+import '../widgets/centered_scroll.dart';
 
 /// 「記録」タブ: 解いた問題数・正答率・連続学習日数・科目別の正答率。
 /// 間隔反復・苦手分析・平均点・偏差値は後続（決定30・50）。
@@ -19,9 +20,12 @@ class RecordScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final progress = ref.watch(progressProvider);
     if (progress.distinctAnswered == 0) {
-      return const EmptyState(
-        icon: Icons.insights_outlined,
-        message: '学習の記録はこれから。演習を進めると、ここに成績が表示されます。',
+      // 共有の EmptyState は縦に固定の Column なので、文字が大きいときも切れないよう包む。
+      return const CenteredScroll(
+        child: EmptyState(
+          icon: Icons.insights_outlined,
+          message: '学習の記録はこれから。演習を進めると、ここに成績が表示されます。',
+        ),
       );
     }
     final theme = Theme.of(context);
@@ -36,13 +40,11 @@ class RecordScreen extends ConsumerWidget {
       children: [
         Text('学習の記録', style: theme.textTheme.titleLarge),
         const SizedBox(height: 12),
-        Row(
-          children: [
-            Expanded(child: _Stat(label: '解いた問題', value: '$answered問')),
-            const SizedBox(width: 12),
-            Expanded(child: _Stat(label: '正答率', value: '$rate%')),
-            const SizedBox(width: 12),
-            Expanded(child: _Stat(label: '連続学習', value: '${progress.streakDays}日')),
+        _StatRow(
+          stats: [
+            _Stat(label: '解いた問題', value: '$answered問'),
+            _Stat(label: '正答率', value: '$rate%'),
+            _Stat(label: '連続学習', value: '${progress.streakDays}日'),
           ],
         ),
         const SizedBox(height: 8),
@@ -83,6 +85,41 @@ class RecordScreen extends ConsumerWidget {
                 ],
               ),
             ),
+        ],
+      ],
+    );
+  }
+}
+
+/// 3 つの数字カードを横に並べる。文字が大きいとき（端末の文字サイズ＋アプリ内「大・特大」）は、
+/// 1 枚が細くなって数字が 1 文字ずつ折り返されるので、縦に積む。
+class _StatRow extends StatelessWidget {
+  const _StatRow({required this.stats});
+
+  final List<Widget> stats;
+
+  /// これ以上の倍率では縦積みにする。
+  static const _stackScale = 1.6;
+
+  @override
+  Widget build(BuildContext context) {
+    final stacked = MediaQuery.textScalerOf(context).scale(14) / 14 >= _stackScale;
+    if (stacked) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (var i = 0; i < stats.length; i++) ...[
+            if (i > 0) const SizedBox(height: 8),
+            stats[i],
+          ],
+        ],
+      );
+    }
+    return Row(
+      children: [
+        for (var i = 0; i < stats.length; i++) ...[
+          if (i > 0) const SizedBox(width: 12),
+          Expanded(child: stats[i]),
         ],
       ],
     );
