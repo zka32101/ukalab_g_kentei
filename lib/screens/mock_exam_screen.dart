@@ -8,6 +8,7 @@ import 'package:ukalab_core/mock_exam_history.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
 import '../data/progress_store.dart';
+import '../widgets/centered_scroll.dart';
 import '../widgets/oshi_card.dart';
 
 /// 「模擬」タブ: 本試験相当の採点（合格ラインの目安は非公開のため70%を目安と明記）。
@@ -233,37 +234,35 @@ class _MockExamScreenState extends ConsumerState<MockExamScreen> {
     final level = widget.exam.levels.first;
 
     if (!_started) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text('模擬試験', style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 8),
-              Text(
-                '本試験（2026年〜のオンライン試験）は約${level.questionCount}問・${(level.timeLimitSec ?? 0) ~/ 60}分（会場試験は120分）。'
-                '合格基準・分野別の出題比率は非公開のため、正答率70%・本アプリ設定の配分は目安（推定）です。',
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 24),
-              FilledButton(onPressed: _start, child: const Text('模擬試験を始める')),
-              const SizedBox(height: 8),
-              OutlinedButton(
-                onPressed: () {
-                  if (!_isPremium(ref)) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('カスタム模擬試験はプレミアムの機能です。設定から購入できます。')),
-                    );
-                    return;
-                  }
-                  _openCustomSetup();
-                },
-                child: const Text('カスタム模擬試験'),
-              ),
-            ],
-          ),
+      return CenteredScroll(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('模擬試験', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(
+              '本試験（2026年〜のオンライン試験）は約${level.questionCount}問・${(level.timeLimitSec ?? 0) ~/ 60}分（会場試験は120分）。'
+              '合格基準・分野別の出題比率は非公開のため、正答率70%・本アプリ設定の配分は目安（推定）です。',
+              textAlign: TextAlign.center,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+            const SizedBox(height: 24),
+            FilledButton(onPressed: _start, child: const Text('模擬試験を始める')),
+            const SizedBox(height: 8),
+            OutlinedButton(
+              onPressed: () {
+                if (!_isPremium(ref)) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('カスタム模擬試験はプレミアムの機能です。設定から購入できます。')),
+                  );
+                  return;
+                }
+                _openCustomSetup();
+              },
+              child: const Text('カスタム模擬試験'),
+            ),
+          ],
         ),
       );
     }

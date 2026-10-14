@@ -4,6 +4,8 @@ import 'package:app_common_kit/app_common_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../widgets/centered_scroll.dart';
+
 /// 「145問ペース走」画面（型④の直前版、決定76）。
 ///
 /// 本番「100分で約145問」のペース感覚を、短縮版（20問×14分）で体感する。
@@ -98,48 +100,44 @@ class _PaceRunScreenState extends State<PaceRunScreen> {
 
   Widget _buildIntro(BuildContext context) {
     final config = PaceRunScreen._config;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('145問ペース走', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(
-              '本番は100分で約145問（1問あたり約41秒）。'
-              'その感覚を${config.questionCount}問・${config.timeLimitSec ~/ 60}分の短縮版で体感します。'
-              '答えの正誤は最後にまとめて採点します。ペースと見直し候補（旗）も練習できます。',
-              textAlign: TextAlign.center,
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 24),
-            FilledButton(onPressed: _start, child: const Text('ペース走を始める')),
-          ],
-        ),
+    return CenteredScroll(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('145問ペース走', style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(
+            '本番は100分で約145問（1問あたり約41秒）。'
+            'その感覚を${config.questionCount}問・${config.timeLimitSec ~/ 60}分の短縮版で体感します。'
+            '答えの正誤は最後にまとめて採点します。ペースと見直し候補（旗）も練習できます。',
+            textAlign: TextAlign.center,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          const SizedBox(height: 24),
+          FilledButton(onPressed: _start, child: const Text('ペース走を始める')),
+        ],
       ),
     );
   }
 
   Widget _buildResult(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              _timedOut ? '時間切れ' : '最後まで解き終えました',
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 12),
-            Text('解答数: ${_index + (_timedOut ? 0 : 1)} / ${_picked.length}問'),
-            Text('正解数: $_correct / ${_picked.length}問'),
-            Text('見直し候補（旗）: ${_flagged.length}問'),
-            const SizedBox(height: 24),
-            FilledButton(onPressed: _start, child: const Text('もう一度')),
-          ],
-        ),
+    return CenteredScroll(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            _timedOut ? '時間切れ' : '最後まで解き終えました',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          Text('解答数: ${_index + (_timedOut ? 0 : 1)} / ${_picked.length}問'),
+          Text('正解数: $_correct / ${_picked.length}問'),
+          Text('見直し候補（旗）: ${_flagged.length}問'),
+          const SizedBox(height: 24),
+          FilledButton(onPressed: _start, child: const Text('もう一度')),
+        ],
       ),
     );
   }
@@ -158,9 +156,11 @@ class _PaceRunScreenState extends State<PaceRunScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('残り $minutes:$seconds', style: Theme.of(context).textTheme.titleMedium),
+              // 文字が大きいときは残り時間を折り返し、旗のボタンを押し出さない。
+              Expanded(
+                child: Text('残り $minutes:$seconds', style: Theme.of(context).textTheme.titleMedium),
+              ),
               IconButton(
                 icon: Icon(flagged ? Icons.flag : Icons.flag_outlined),
                 color: flagged ? Theme.of(context).colorScheme.error : null,
