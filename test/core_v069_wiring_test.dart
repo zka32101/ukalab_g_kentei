@@ -8,6 +8,7 @@ import 'package:ukalab_core/ukalab_core.dart';
 import 'package:ukalab_g_kentei/data/oshi_growth.dart';
 import 'package:ukalab_g_kentei/data/progress_store.dart';
 import 'package:ukalab_g_kentei/main.dart';
+import 'package:ukalab_g_kentei/widgets/core_v069_home_cards.dart' show OshiGrowthSection;
 
 import 'test_support.dart';
 
@@ -48,10 +49,11 @@ ProgressRecord _rec(int i, {bool correct = true, String subject = 's1'}) => Prog
     );
 
 void main() {
-  testWidgets('ホームに今日の復習・推しの成長が出る(履歴なしでは分析は出ない)', (tester) async {
+  testWidgets('ホームに今日の復習が出て、成長の吹き出しは出ない(履歴なしでは分析は出ない)', (tester) async {
     await _boot(tester);
     expect(find.byType(TodayReviewCard), findsOneWidget);
-    expect(find.byType(OshiGrowthBubble), findsOneWidget);
+    expect(find.byType(OshiGrowthSection), findsOneWidget); // 祝福の見張り役は残す
+    expect(find.byType(OshiGrowthBubble, skipOffstage: false), findsNothing);
     expect(find.byType(MockExamAnalysisCard), findsNothing);
     // 既存の入口は残っている。
     expect(find.text('間違いノート'), findsOneWidget);
@@ -119,7 +121,7 @@ void main() {
             encodeHistory([for (var i = 0; i < 6; i++) _rec(i, correct: i.isEven)]),
       });
       expect(find.byType(TodayReviewCard), findsOneWidget);
-      expect(find.byType(OshiGrowthBubble), findsOneWidget);
+      expect(find.byType(OshiGrowthBubble, skipOffstage: false), findsNothing);
       expect(find.byType(MockExamAnalysisCard), findsOneWidget);
       expect(tester.takeException(), isNull);
     });

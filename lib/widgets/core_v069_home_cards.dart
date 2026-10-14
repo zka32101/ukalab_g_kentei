@@ -93,8 +93,8 @@ class MockExamAnalysisSection extends ConsumerWidget {
   }
 }
 
-/// ホーム「②記録」の推しの成長演出。累計の回答数・学習日数に応じた一言(タップで別の一言)と、
-/// 節目(10/50/100/300/1000 問・7/30/100 日)に届いたときの祝福(一度だけ)。
+/// ホーム「②記録」に置く、推しの成長演出の見張り役。吹き出し(OshiGrowthBubble)はホームに出さない
+/// (常時表示は「推しの一言」だけ)。節目(10/50/100/300/1000 問・7/30/100 日)に届いたときの祝福(一度だけ)を担う。
 ///
 /// 祝福は、この画面が見えていて一番上にあるときだけ出す(学習中の画面に割り込まない)。
 /// 保存に失敗したら記録されず、次回また祝える。無料。
@@ -152,10 +152,9 @@ class _OshiGrowthSectionState extends ConsumerState<OshiGrowthSection> {
   @override
   Widget build(BuildContext context) {
     ref.listen(historyProvider, (_, __) => _check());
-    final progress = oshiGrowthProgressFor(
-      records: ref.watch(historyProvider),
-      progress: ref.watch(progressProvider),
-    );
-    return OshiGrowthBubble(progress: progress);
+    // 表示はしないが、解答履歴の変化を購読して節目の判定を続ける(祝福の発火経路を従来どおり保つ)。
+    ref.watch(historyProvider);
+    ref.watch(progressProvider);
+    return const SizedBox.shrink();
   }
 }
