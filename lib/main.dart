@@ -151,6 +151,8 @@ void main() async {
   );
   await container.read(handsFreeProvider.notifier).load();
   await container.read(examDateProvider.notifier).load();
+  // 文字の大きさ（アプリ内設定）を復元する
+  await loadSavedTextScale();
 
   runApp(UncontrolledProviderScope(
     container: container,
@@ -177,7 +179,11 @@ class UkalabGKenteiApp extends ConsumerWidget {
     watchAchievementUnlocks(ref, scaffoldMessengerKey);
     return MaterialApp(
       scaffoldMessengerKey: scaffoldMessengerKey,
-      builder: (context, child) => ReminderNotificationWatcher(child: child ?? const SizedBox.shrink()),
+      // 文字の大きさ（設定画面で選ぶ）を端末の文字サイズに掛け合わせる。
+      builder: (context, child) => applyAppTextScale(
+        context,
+        ReminderNotificationWatcher(child: child ?? const SizedBox.shrink()),
+      ),
       title: 'うかラボ G検定',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ja', 'JP'),
