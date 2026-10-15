@@ -50,3 +50,6 @@ app.*.map.json
 /android/app/release
 e2e/node_modules/
 e2e/shots/
+
+# Firebase の設定ファイル（コミットしない）
+android/app/google-services.json
