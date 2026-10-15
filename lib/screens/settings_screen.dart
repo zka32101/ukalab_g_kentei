@@ -12,6 +12,7 @@ import 'package:ukalab_core/reminder.dart' show ReminderSettingsSection;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
+import '../widgets/peer_stats_settings_section.dart';
 import 'exam_prep_entry.dart';
 import 'mistake_note_screen.dart';
 
@@ -122,6 +123,8 @@ class SettingsScreen extends ConsumerWidget {
         const DailyGoalSetting(),
         const Divider(height: 24),
         const ReminderSettingsSection(),
+        // 送信処理が未実装の間は非表示(kPeerStatsSettingsVisible=false)。
+        const PeerStatsSettingsSection(),
         const Divider(height: 24),
         DataManagementSection(
           parts: gKenteiDataParts,
