@@ -86,3 +86,13 @@
 `python3 tools/question_tags/validate_question_tags.py`（JSON妥当性・qid重複なし・細目の語彙がこの表と一致・
 細目が章のプレフィックスと一致・`compareWith` の参照先が実在かつ自己参照でない・
 `answerIndex`/選択肢など既存項目が元の `origin/main` から不変）。
+
+## 観点（conceptId / angle）と AI 下書きタグ（multi-angle パイロット）
+
+ukalab_core v0.75.0 の `Question.conceptId` / `angle` / `tags` を使う。設計は ukalab_core `docs/multi_angle_questions_design.md`。
+
+- `conceptId`: 用語データの `termId` と同じ値（例: `g_kentei_term-0013`）。
+- `angle`: `definition`（定義・性質）/ `scenario`（事例に当てはめる）/ `comparison`（紛らわしい相手との違い。必要なら `compareWith` を併用）/ `reverse`（説明から用語を当てる）。新しい問題タイプ（trueFalse / cloze / reverseLookup）は、アプリに UI が入るまで追加しない。
+- `tags: ["ai-draft"]`: **AI が下書きし、人（運営者・専門家）の事実確認が済んでいない問題**。新規に AI が書いた問題には必ず付ける。確認が済んだら人が外す。`ai-draft` が残る問題は、広告表現（「別の角度で」等）の根拠に数えない。
+- 用語側 `relatedQuestionIds` には、その概念の問題（逆引き以外の観点も）を追加する。
+- パイロットの結果は `docs/angle_coverage_pilot.md`。
