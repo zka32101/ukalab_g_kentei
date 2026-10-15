@@ -55,6 +55,7 @@ flutter:
     - assets/experience/
     - assets/features/
     - assets/fonts/OFL.txt
+    - assets/icon/app_icon_foreground.png
   fonts:
     # BIZ UDPGothic（SIL OFL 1.1・モリサワ）。端末のフォント差で漢字の字形が変わらないよう同梱。
     - family: BIZUDPGothic
