@@ -9,6 +9,7 @@ import 'package:ukalab_core/daily_goal.dart' show DailyMissionCard;
 import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
 import '../data/exam_repository.dart';
+import '../widgets/cert_prop_badge.dart';
 import '../widgets/core_v069_home_cards.dart';
 import '../widgets/oshi_card.dart';
 import '../widgets/oshi_home_cards.dart';
@@ -183,11 +184,26 @@ class HomeScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('うかラボ G検定', style: theme.textTheme.titleLarge),
-                const SizedBox(height: 4),
-                Text(
-                  'JDLA Deep Learning for GENERAL 対策（JDLAとは無関係の非公式アプリ）',
-                  style: theme.textTheme.bodySmall,
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('うかラボ G検定', style: theme.textTheme.titleLarge),
+                          const SizedBox(height: 4),
+                          Text(
+                            'JDLA Deep Learning for GENERAL 対策（JDLAとは無関係の非公式アプリ）',
+                            style: theme.textTheme.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ),
+                    // 資格の小物(AI・データ系なのでチップ)。控えめな飾りで、タップ対象にしない。
+                    const SizedBox(width: 8),
+                    const CertPropBadge(size: 40),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 OshiCard(totalQuestions: questions.length, examDate: examDate),
