@@ -194,6 +194,10 @@ class UkalabGKenteiApp extends ConsumerWidget {
   }
 }
 
+/// ネイティブ起動画面（Android launch_background / iOS LaunchScreen）と同じ見た目にする。
+const String kStartupIconAsset = 'assets/icon/app_icon_foreground.png';
+const Color kStartupBackground = Color(0xFF6D4AD8);
+
 class _RootPage extends ConsumerWidget {
   const _RootPage();
 
@@ -201,7 +205,11 @@ class _RootPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final examData = ref.watch(examDataProvider);
     return examData.when(
-      loading: () => const StartupSplash(),
+      loading: () => const StartupSplash(
+        appIconAsset: kStartupIconAsset,
+        backgroundColor: kStartupBackground,
+        appIconSize: 160,
+      ),
       error: (e, st) => Scaffold(
         body: ErrorState(
           message: '問題データを読み込めませんでした。\n$e',
