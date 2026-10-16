@@ -27,6 +27,12 @@ import 'services/local_reminder_notifier.dart';
 import 'services/no_ads_backend.dart';
 
 /// Google公式のテスト広告ユニットID。本番公開前に実際のIDへ差し替える（決定35）。
+/// 本番の広告ユニットID（Android）。ビルド時に
+/// `--dart-define=AD_BANNER_ID=ca-app-pub-.../...` などで渡す。リポジトリには置かない。
+const _adBannerId = String.fromEnvironment('AD_BANNER_ID');
+const _adInterstitialId = String.fromEnvironment('AD_INTERSTITIAL_ID');
+const _adRewardedId = String.fromEnvironment('AD_REWARDED_ID');
+
 AdUnitIds _adUnitIds() => kIsWeb
     // Web には広告SDKが無く、広告は出さない（NoAdsBackend）。リリースビルドでテストIDを
     // 使うと AdGate が例外にするため、Web では空のIDにする。
@@ -37,14 +43,12 @@ AdUnitIds _adUnitIds() => kIsWeb
         interstitial: 'ca-app-pub-3940256099942544/4411468910',
         rewarded: 'ca-app-pub-3940256099942544/1712485313',
       )
-    // Android: リリースビルドだけ本番の広告ユニット、それ以外（デバッグ・profile）は
-    // テスト広告。開発中に本物の広告を表示・クリックして不正クリック扱いになるのを避ける。
+    // Android: リリースビルドだけ本番の広告ユニット（ビルド時に --dart-define で渡す）。
+    // それ以外（デバッグ・profile）はテスト広告。開発中に本物の広告を表示・クリックして
+    // 不正クリック扱いになるのを避ける。リリースで未指定なら空のIDにして、広告を出さない
+    // （テストIDのままだと AdGate が例外にするため）。
     : kReleaseMode
-    ? const AdUnitIds(
-        banner: 'ca-app-pub-5058227312086483/8168849142',
-        interstitial: 'ca-app-pub-5058227312086483/8987106793',
-        rewarded: 'ca-app-pub-5058227312086483/8085088669',
-      )
+    ? const AdUnitIds(banner: _adBannerId, interstitial: _adInterstitialId, rewarded: _adRewardedId)
     : const AdUnitIds(
         banner: 'ca-app-pub-3940256099942544/6300978111',
         interstitial: 'ca-app-pub-3940256099942544/1033173712',
