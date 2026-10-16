@@ -117,6 +117,7 @@ Widget _app(List<Question> qs, AdGate gate,
 ProviderContainer _container(WidgetTester t) => ProviderScope.containerOf(t.element(find.byType(LearnScreen)));
 
 void main() {
+  _displayPromptTests();
   setUp(() => SharedPreferences.setMockInitialValues({}));
 
   // 解答後は結果・解説・間違えた理由・「次へ」が縦に並ぶので、縦長の画面で試す。
@@ -326,4 +327,11 @@ extension on Question {
         contentVer: contentVer,
         disabled: true,
       );
+}
+
+void _displayPromptTests() {
+  test('一覧用の問題文 displayPrompt: 4択は prompt と同じ（従来どおり）', () {
+    final q = _choice('c1');
+    expect(q.displayPrompt, q.prompt);
+  });
 }
