@@ -2,9 +2,9 @@
 
 | 項目 | 値 |
 |---|---|
-| 有効な問題数 | 770 |
-| conceptId 付与 | 90 (11.7%) |
-| angle 付与 | 90 |
+| 有効な問題数 | 818 |
+| conceptId 付与 | 138 (16.9%) |
+| angle 付与 | 138 |
 | 概念数 | 30 |
 | 2 観点以上の概念 | 30 (100.0%) |
 
@@ -15,44 +15,44 @@
 | definition | 16 |
 | scenario | 27 |
 | comparison | 17 |
-| reverse | 30 |
-| cloze | 0 |
-| trueFalse | 0 |
+| reverse | 36 |
+| cloze | 12 |
+| trueFalse | 30 |
 
 ## 概念別
 
 | conceptId | 観点数 | definition | scenario | comparison | reverse | cloze | trueFalse | angle なし |
 |---|---|---|---|---|---|---|---|---|
-| g_kentei_term-0004 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0007 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0008 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0011 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0012 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0013 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0014 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0015 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0017 | 3 | 1 | 0 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0018 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0019 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0021 | 3 | 1 | 0 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0023 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0024 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0031 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0032 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0036 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0037 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0038 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0040 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0046 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0078 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0108 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0111 | 3 | 1 | 1 | 0 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0113 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0114 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0116 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0195 | 3 | 1 | 0 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0198 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
-| g_kentei_term-0200 | 3 | 0 | 1 | 1 | 1 | 0 | 0 | 0 |
+| g_kentei_term-0004 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0007 | 4 | 0 | 1 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0008 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0011 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0012 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0013 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0014 | 4 | 1 | 1 | 0 | 2 | 0 | 1 | 0 |
+| g_kentei_term-0015 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0017 | 4 | 1 | 0 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0018 | 5 | 1 | 1 | 0 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0019 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0021 | 4 | 1 | 0 | 1 | 2 | 0 | 1 | 0 |
+| g_kentei_term-0023 | 4 | 0 | 1 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0024 | 5 | 1 | 1 | 0 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0031 | 4 | 0 | 1 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0032 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0036 | 5 | 1 | 1 | 0 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0037 | 5 | 1 | 1 | 0 | 2 | 1 | 1 | 0 |
+| g_kentei_term-0038 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0040 | 5 | 1 | 1 | 0 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0046 | 4 | 1 | 1 | 0 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0078 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0108 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0111 | 4 | 1 | 1 | 0 | 2 | 0 | 1 | 0 |
+| g_kentei_term-0113 | 5 | 0 | 1 | 1 | 1 | 1 | 1 | 0 |
+| g_kentei_term-0114 | 4 | 0 | 1 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0116 | 4 | 0 | 1 | 1 | 2 | 0 | 1 | 0 |
+| g_kentei_term-0195 | 4 | 1 | 0 | 1 | 1 | 0 | 1 | 0 |
+| g_kentei_term-0198 | 4 | 0 | 1 | 1 | 2 | 0 | 1 | 0 |
+| g_kentei_term-0200 | 4 | 0 | 1 | 1 | 1 | 0 | 1 | 0 |
 
 ## 観点が 2 未満の概念
 
