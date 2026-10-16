@@ -8,6 +8,7 @@ import 'package:ukalab_core/daily_goal.dart' show recordDailyAnswer;
 import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../data/feature_flags.dart';
 import '../data/history_store.dart';
 import '../data/mistake_notes.dart';
 import '../data/progress_store.dart';
@@ -40,6 +41,8 @@ List<Question> buildNagaraPool(
   Random? random,
 }) {
   final rnd = random ?? Random();
+  // 音声の流れは選択式前提。○×・空欄補充・説明から用語は、フラグに関わらず出さない。
+  questions = withoutNewTypes(questions);
   List<Question> pool;
   switch (source) {
     case NagaraSource.all:
@@ -69,7 +72,7 @@ String? recentSubjectId(List<ProgressRecord> history) {
 List<NagaraQuestion> toNagaraQuestions(List<Question> qs, {Random? random}) {
   final rnd = random ?? Random();
   return [
-    for (final q in qs)
+    for (final q in withoutNewTypes(qs))
       () {
         final order = List.generate(q.choices.length, (i) => i)..shuffle(rnd);
         return NagaraQuestion(

@@ -4,6 +4,7 @@ import 'package:app_common_kit/app_common_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../data/feature_flags.dart';
 import '../widgets/centered_scroll.dart';
 
 /// 「145問ペース走」画面（型④の直前版、決定76）。
@@ -41,8 +42,9 @@ class _PaceRunScreenState extends State<PaceRunScreen> {
   }
 
   void _start() {
+    // 選択式前提の画面。新タイプはフラグに関わらず出さない。
+    final picked = withoutNewTypes(widget.questions)..shuffle();
     final count = PaceRunScreen._config.questionCount.clamp(1, widget.questions.length);
-    final picked = List<Question>.from(widget.questions)..shuffle();
     setState(() {
       _picked = picked.take(count).toList();
       _flagged.clear();

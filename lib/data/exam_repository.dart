@@ -5,6 +5,8 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import 'feature_flags.dart';
+
 /// G検定の試験定義・問題データ・用語データを assets から読み込む。
 class ExamData {
   const ExamData({
@@ -25,6 +27,7 @@ class ExamData {
     required this.ethicsCaseScenarios,
     required this.storyScenarios,
     required this.chapterReadings,
+    this.newQuestionTypesEnabled = kNewQuestionTypesEnabled,
   });
 
   final ExamConfig exam;
@@ -73,8 +76,15 @@ class ExamData {
   /// 章ごとの解説読み物（教科書的なまとめページ）の一覧。
   final List<ChapterReading> chapterReadings;
 
-  List<Question> get activeQuestions =>
-      questions.where((q) => !q.disabled).toList();
+  /// 新しい問題タイプを出題に含めるか（既定は [kNewQuestionTypesEnabled]。テストで切り替える）。
+  final bool newQuestionTypesEnabled;
+
+  /// 出題に使える問題。無効（disabled）と、フラグ（[kNewQuestionTypesEnabled]）が
+  /// false のときの新タイプを除く。アプリ全体の出題プールはここを通る。
+  List<Question> get activeQuestions => selectableQuestions(
+        questions.where((q) => !q.disabled),
+        newTypesEnabled: newQuestionTypesEnabled,
+      );
 
   Term? termById(String termId) {
     for (final t in terms) {

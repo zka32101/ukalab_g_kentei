@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../data/feature_flags.dart';
 import '../data/history_store.dart';
 import '../data/progress_store.dart';
 import '../data/review_schedule.dart';
@@ -18,11 +19,16 @@ class LearnScreen extends ConsumerStatefulWidget {
     required this.questions,
     required this.terms,
     this.sessionSize = 10,
+    this.newTypesEnabled = kNewQuestionTypesEnabled,
   });
 
   final List<Question> questions;
   final List<Term> terms;
   final int sessionSize;
+
+  /// ○×・空欄補充・説明から用語を出題に含めるか（既定は [kNewQuestionTypesEnabled]）。
+  /// false のときは [questions] に含まれていても出さない（二重の防御）。
+  final bool newTypesEnabled;
 
   @override
   ConsumerState<LearnScreen> createState() => _LearnScreenState();
@@ -53,9 +59,12 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
         () => List.generate(q.choices.length, (i) => i)..shuffle(),
       );
 
+  late final List<Question> _pool =
+      selectableQuestions(widget.questions, newTypesEnabled: widget.newTypesEnabled);
+
   PracticeSession _newSession() => PracticeSession(
-        pool: widget.questions,
-        size: widget.sessionSize.clamp(1, widget.questions.length),
+        pool: _pool,
+        size: widget.sessionSize.clamp(1, _pool.length),
         seed: DateTime.now().millisecondsSinceEpoch,
       );
 
@@ -80,7 +89,42 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       _answeredQuestion = q;
     });
     _session.answer(i);
-    final correct = i == q.answerIndex;
+    await _recordResult(q, correct: i == q.answerIndex);
+  }
+
+  /// 新タイプ（○×・空欄補充・説明から用語）の解答。core の画面の結果を
+  /// [PracticeSession] に渡し、履歴・進捗・復習予定にも記録する。
+  Future<void> _answerNewType(Question q, QuestionViewResult r) async {
+    if (_answered || _session.current?.qid != q.qid) return;
+    setState(() {
+      _answered = true;
+      _answeredQuestion = q;
+    });
+    switch (q.type) {
+      case QuestionType.trueFalse:
+        _session.answerTrueFalse(r.boolAnswer!);
+      case QuestionType.cloze:
+        _session.answerCloze(r.blankAnswers!);
+      case QuestionType.reverseLookup:
+        _session.answerReverseLookup(r.text!);
+      case QuestionType.choice:
+      case QuestionType.journal:
+      case QuestionType.worksheet:
+      case QuestionType.ledger:
+        return;
+    }
+    await _recordResult(q, correct: r.correct);
+  }
+
+  /// 自由入力の打ち間違いを本人が「合っていた」と申告したとき。直前の不正解の記録を正解に直す。
+  Future<void> _selfReported(Question q) async {
+    _session.markLastSelfReportedCorrect();
+    await ref.read(historyProvider.notifier).markLatestCorrect(q.qid);
+    await ref.read(progressProvider.notifier).recordAnswer(q.qid, correct: true);
+    await applyReviewResult(q.qid, correct: true, at: DateTime.now());
+  }
+
+  Future<void> _recordResult(Question q, {required bool correct}) async {
     await ref.read(progressProvider.notifier).recordAnswer(q.qid, correct: correct);
     await recordDailyAnswer(ref);
     // 履歴と同じ時刻で復習予定に反映する(先に反映し、ホームが履歴の更新で読み直すときに間に合わせる)。
@@ -171,7 +215,7 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.questions.isEmpty) {
+    if (_pool.isEmpty) {
       return const EmptyState(message: '問題データがまだありません。');
     }
     // 回答済みの間は、回答した問題で描く（_answeredQuestion の説明を参照）。
@@ -197,7 +241,8 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
       );
     }
 
-    if (ref.watch(handsFreeProvider).enabled && !_answered) {
+    // ハンズフリー表示は選択式前提。新タイプは通常の画面（core の画面）で出す。
+    if (ref.watch(handsFreeProvider).enabled && !_answered && !isNewQuestionType(q)) {
       final order = _orderFor(q);
       return HandsFreeChoiceBody(
         qid: q.qid,
@@ -208,6 +253,8 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
         onSelect: (pos) => _select(order[pos]),
       );
     }
+
+    if (isNewQuestionType(q)) return _buildNewType(q);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
@@ -257,6 +304,63 @@ class _LearnScreenState extends ConsumerState<LearnScreen> {
             QuestionMemoField(key: ValueKey(q.qid), qid: q.qid),
             const SizedBox(height: 16),
             FilledButton(onPressed: _next, child: const Text('次へ')),
+          ],
+        ],
+      ),
+    );
+  }
+
+  /// 新タイプの問題。出題・採点・解説・間違えた理由・「次へ」は core の画面が受け持つ。
+  Widget _buildNewType(Question q) {
+    final index = _session.index + (_answered ? 0 : 1);
+    final total = _session.questions.length;
+    final Widget view = switch (q.type) {
+      QuestionType.trueFalse => TrueFalseQuestionView(
+          key: ValueKey('tf-${q.qid}'),
+          question: q,
+          terms: widget.terms,
+          index: index,
+          total: total,
+          onAnswered: (r) => _answerNewType(q, r),
+          onCause: (c) => ref.read(historyProvider.notifier).setCause(q.qid, c),
+          onNext: _next,
+        ),
+      QuestionType.cloze => ClozeQuestionView(
+          key: ValueKey('cloze-${q.qid}'),
+          question: q,
+          terms: widget.terms,
+          index: index,
+          total: total,
+          onAnswered: (r) => _answerNewType(q, r),
+          onSelfReported: () => _selfReported(q),
+          onCause: (c) => ref.read(historyProvider.notifier).setCause(q.qid, c),
+          onNext: _next,
+        ),
+      _ => ReverseLookupQuestionView(
+          key: ValueKey('rev-${q.qid}'),
+          question: q,
+          terms: widget.terms,
+          index: index,
+          total: total,
+          onAnswered: (r) => _answerNewType(q, r),
+          onSelfReported: () => _selfReported(q),
+          onCause: (c) => ref.read(historyProvider.notifier).setCause(q.qid, c),
+          onNext: _next,
+        ),
+    };
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Align(
+            alignment: Alignment.centerRight,
+            child: BookmarkToggleButton(qid: q.qid),
+          ),
+          view,
+          if (_answered) ...[
+            const SizedBox(height: 12),
+            QuestionMemoField(key: ValueKey(q.qid), qid: q.qid),
           ],
         ],
       ),
