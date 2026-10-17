@@ -116,7 +116,8 @@ void main() async {
   final adGate = await AdGate.init(
     config: AdConfig(unitIds: _adUnitIds()),
     // Web には広告SDK（google_mobile_ads）が無いため、広告を出さない実装にする。
-    backend: kIsWeb ? NoAdsBackend() : null,
+    // 本番の広告ユニットIDが未指定(空)のリリースでも、広告SDKを使わず、広告なしで起動する。
+    backend: kIsWeb || _adUnitIds().banner.isEmpty ? NoAdsBackend() : null,
     adsHidden: () => entitlementService.state.adsHidden,
     isRelease: kReleaseMode,
   );
