@@ -2,6 +2,7 @@ import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
 import 'core_features.dart';
+import 'mock_exam_quota.dart';
 import 'mistake_notes.dart';
 
 /// 「今日の復習」の復習予定の保存先(端末内。キー `ukalab_g_kentei_review_schedule`)。
@@ -42,7 +43,13 @@ Future<void> applyReviewResult(
   try {
     final s = store ?? reviewSchedulerStore;
     final items = await s.read();
-    if (!items.any((i) => i.qid == qid)) return;
+    final target = items.where((i) => i.qid == qid).firstOrNull;
+    if (target == null) return;
+    // 期限が来ていた復習に答えたときだけ、1日の回数に数える(復習の案内の無料枠用)。
+    final wasDue = !target.graduated && !target.dueAt.isAfter(at);
     await s.write(reviewSchedulerEngine.applyResult(items, qid, correct: correct, now: at));
+    if (wasDue) {
+      await (await todayReviewQuota(isPremium: false)).tryConsume();
+    }
   } catch (_) {}
 }
