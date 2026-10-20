@@ -163,11 +163,11 @@ Future<void> _scrollToFind(WidgetTester tester, Finder f) async {
     await tester.pump(const Duration(milliseconds: 30));
   }
   final seen = find
-      .byType(Text, skipOffstage: false)
+      .byType(Text)
       .evaluate()
       .map((e) => (e.widget as Text).data ?? '')
       .where((t) => t.isNotEmpty)
-      .take(40)
+      .take(60)
       .join(' | ');
   if (f.evaluate().isEmpty) throw StateError('届かない。画面の文言: $seen');
 }
@@ -328,7 +328,7 @@ Future<_Report> _sweep(WidgetTester tester) async {
     if (!broken) {
       await tester.runAsync(() async {
         final data = await _container.read(examDataProvider.future);
-        final qs = data.activeQuestions.take(40).toList();
+        final qs = data.activeQuestions.take(60).toList();
         for (var i = 0; i < qs.length; i++) {
           final ok = i % 3 == 0;
           await _container.read(progressProvider.notifier).recordAnswer(qs[i].qid, correct: ok);
