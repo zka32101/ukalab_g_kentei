@@ -47,7 +47,7 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Serve and check
         env:
-          E2E_SETTINGS: '購入,ながら学習モード,受験日'
+          E2E_SETTINGS: '購入,プレミアムでできること,ながら学習モード,受験日'
           E2E_EXAM_DATE: '1'
           E2E_HOME: 'うかラボ G検定,今日やること,最短ルートプランナー,145問ペース走'
           E2E_LEARN: '道具,用語集,間違いノート'
