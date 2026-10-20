@@ -49,6 +49,8 @@ jobs:
         env:
           E2E_SETTINGS: '購入,ながら学習モード,受験日'
           E2E_EXAM_DATE: '1'
+          E2E_HOME: 'うかラボ G検定,今日やること,最短ルートプランナー,145問ペース走'
+          E2E_LEARN: '道具,用語集,間違いノート'
         run: |
           (cd build/web && python3 -m http.server 8099 >/dev/null 2>&1 &)
           for i in $(seq 1 30); do curl -sf http://localhost:8099/ >/dev/null && break; sleep 1; done

@@ -154,6 +154,24 @@ Future<void> _scrollAll(WidgetTester tester) async {
   await _settle(tester);
 }
 
+/// 「学ぶ」など縦に長い画面で、[f] が組まれるまで下へ送る（見つからなければ例外で気づく）。
+Future<void> _scrollToFind(WidgetTester tester, Finder f) async {
+  for (var i = 0; i < 60 && f.evaluate().isEmpty; i++) {
+    final sc = find.byType(Scrollable);
+    if (sc.evaluate().isEmpty) break;
+    await tester.drag(sc.first, const Offset(0, -300), warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 30));
+  }
+  final seen = find
+      .byType(Text)
+      .evaluate()
+      .map((e) => (e.widget as Text).data ?? '')
+      .where((t) => t.isNotEmpty)
+      .take(60)
+      .join(' | ');
+  if (f.evaluate().isEmpty) throw StateError('届かない。画面の文言: $seen');
+}
+
 Future<void> _scrollTop(WidgetTester tester) async {
   final scrollable = find.byType(Scrollable);
   if (scrollable.evaluate().isEmpty) return;
@@ -188,13 +206,17 @@ Future<List<String>> _tileTitles(WidgetTester tester) async {
   return titles;
 }
 
-const _homeTargets = [
-  '用語集',
-  '最短ルートプランナー',
-  '145問ペース走',
+/// 「学ぶ」タブの「道具」（ホームから移った入口）。
+const _learnTargets = [
   '間違いノート',
+  '用語集',
   '章ごとの解説読み物',
   '用語マップ・AI系譜図',
+];
+
+const _homeTargets = [
+  '最短ルートプランナー',
+  '145問ペース走',
   'AIと法律の境界線',
   '予測→実行',
   '推しの答案を添削',
@@ -262,6 +284,20 @@ Future<_Report> _sweep(WidgetTester tester) async {
         }
       });
     }
+    for (final t in _learnTargets) {
+      await step('learn>$t', () async {
+        await _gotoTab(tester, '学ぶ');
+        await _scrollTop(tester);
+        final f = find.text(t);
+        await _scrollToFind(tester, f);
+        await tester.ensureVisible(f.first);
+        await _settle(tester);
+        await tester.tap(f.first, warnIfMissed: false);
+        await _settle(tester);
+        await _scrollAll(tester);
+        await _back(tester);
+      });
+    }
     final labels = tester
         .widgetList<NavigationDestination>(find.byType(NavigationDestination))
         .map((d) => d.label)
@@ -291,6 +327,9 @@ Future<_Report> _sweep(WidgetTester tester) async {
     // 学習を進めた後（記録・間違いノート・ホームに中身がある状態）。
     if (!broken) {
       await tester.runAsync(() async {
+        // 設定タブの走査で「ながら学習モード」が入っていることがある。ハンズフリー表示には
+        // 「道具」が無い（音声操作の全画面）ので、通常の演習画面に戻してから確かめる。
+        await _container.read(handsFreeProvider.notifier).setEnabled(false);
         final data = await _container.read(examDataProvider.future);
         final qs = data.activeQuestions.take(40).toList();
         for (var i = 0; i < qs.length; i++) {
@@ -309,8 +348,10 @@ Future<_Report> _sweep(WidgetTester tester) async {
         await _scrollAll(tester);
       });
     }
-    await step('学習後 home>間違いノート', () async {
-      await _gotoTab(tester, 'ホーム');
+    await step('学習後 learn>間違いノート', () async {
+      await _gotoTab(tester, '学ぶ');
+      await _scrollTop(tester);
+      await _scrollToFind(tester, find.text('間違いノート'));
       if (await _tap(tester, find.text('間違いノート'))) {
         await _scrollAll(tester);
         await _back(tester);
