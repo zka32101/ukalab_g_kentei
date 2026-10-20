@@ -327,8 +327,11 @@ Future<_Report> _sweep(WidgetTester tester) async {
     // 学習を進めた後（記録・間違いノート・ホームに中身がある状態）。
     if (!broken) {
       await tester.runAsync(() async {
+        // 設定タブの走査で「ながら学習モード」が入っていることがある。ハンズフリー表示には
+        // 「道具」が無い（音声操作の全画面）ので、通常の演習画面に戻してから確かめる。
+        await _container.read(handsFreeProvider.notifier).setEnabled(false);
         final data = await _container.read(examDataProvider.future);
-        final qs = data.activeQuestions.take(60).toList();
+        final qs = data.activeQuestions.take(40).toList();
         for (var i = 0; i < qs.length; i++) {
           final ok = i % 3 == 0;
           await _container.read(progressProvider.notifier).recordAnswer(qs[i].qid, correct: ok);
