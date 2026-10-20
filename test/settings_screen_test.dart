@@ -172,7 +172,7 @@ void main() {
   });
 
   group('学習履歴のCSV', () {
-    Future<ProviderContainer> seeded({required bool withRecord}) async {
+    Future<ProviderContainer> seeded(WidgetTester tester, {required bool withRecord}) async {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(overrides: [
         entitlementServiceProvider.overrideWithValue(_service()),
@@ -181,9 +181,10 @@ void main() {
       ]);
       addTearDown(container.dispose);
       if (withRecord) {
-        await container
+        // 実際の非同期処理（SharedPreferences）なので、FakeAsync の外で待つ。
+        await tester.runAsync(() => container
             .read(historyProvider.notifier)
-            .record(_question('q1'), correct: true, at: DateTime(2026, 10, 20, 9));
+            .record(_question('q1'), correct: true, at: DateTime(2026, 10, 20, 9)));
       }
       return container;
     }
@@ -199,7 +200,7 @@ void main() {
 
     testWidgets('タップするとファイル保存（UTF-8 BOM・text/csv・日付入りの名前）を呼び、クリップボードは使わない', (tester) async {
       final calls = <({Uint8List bytes, String fileName, String mimeType})>[];
-      final container = await seeded(withRecord: true);
+      final container = await seeded(tester, withRecord: true);
       _tall(tester);
       await tester.pumpWidget(host(container, ({
         required Uint8List bytes,
@@ -229,7 +230,7 @@ void main() {
 
     testWidgets('履歴が空ならファイルを作らず、その旨を表示する', (tester) async {
       var called = false;
-      final container = await seeded(withRecord: false);
+      final container = await seeded(tester, withRecord: false);
       _tall(tester);
       await tester.pumpWidget(host(container, ({
         required Uint8List bytes,
@@ -250,7 +251,7 @@ void main() {
     });
 
     testWidgets('保存に失敗したら失敗の文言を表示する', (tester) async {
-      final container = await seeded(withRecord: true);
+      final container = await seeded(tester, withRecord: true);
       _tall(tester);
       await tester.pumpWidget(host(container, ({
         required Uint8List bytes,
