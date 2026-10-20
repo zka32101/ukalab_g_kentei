@@ -8,12 +8,10 @@ import 'package:ukalab_core/ukalab_core.dart';
 import 'package:ukalab_core/daily_goal.dart' show DailyMissionCard;
 import 'package:ukalab_core/reminder.dart' show StudyReminderCard;
 import 'package:ukalab_core/exam_date.dart';
-import '../data/exam_repository.dart';
 import '../widgets/cert_prop_badge.dart';
 import '../widgets/core_v069_home_cards.dart';
 import '../widgets/oshi_card.dart';
 import '../widgets/oshi_home_cards.dart';
-import 'mistake_note_screen.dart';
 import 'nagara_entry.dart';
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
@@ -29,11 +27,8 @@ import 'pace_run_screen.dart';
 import 'exam_prep_entry.dart';
 import 'premium_practice_cards.dart';
 import 'predict_run_screen.dart';
-import 'reading_screen.dart';
 import 'route_planner_screen.dart';
 import 'teach_mascot_screen.dart';
-import 'term_map_screen.dart';
-import 'terms_screen.dart';
 
 /// 「ホーム」タブ。推し・学習コインを表示（決定67〜77）。
 class HomeScreen extends ConsumerWidget {
@@ -49,13 +44,11 @@ class HomeScreen extends ConsumerWidget {
     required this.confusionMatrixScenarios,
     required this.methodChoiceScenarios,
     required this.mlLabDatasets,
-    required this.aiNewsItems,
     required this.convLabImages,
     required this.attentionVizScenarios,
     required this.nnBuilderDatasets,
     required this.ethicsCaseScenarios,
     required this.storyScenarios,
-    required this.chapterReadings,
   });
 
   final ExamConfig exam;
@@ -68,19 +61,11 @@ class HomeScreen extends ConsumerWidget {
   final List<ConfusionMatrixScenario> confusionMatrixScenarios;
   final List<MethodChoiceScenario> methodChoiceScenarios;
   final List<MlLabDataset> mlLabDatasets;
-  final List<AiNewsItem> aiNewsItems;
   final List<ConvLabImage> convLabImages;
   final List<AttentionVizScenario> attentionVizScenarios;
   final List<NnBuilderDataset> nnBuilderDatasets;
   final List<EthicsCaseScenario> ethicsCaseScenarios;
   final List<StoryScenario> storyScenarios;
-  final List<ChapterReading> chapterReadings;
-
-  /// 一覧から開く問題の詳細。選択肢の記号は演習（A・B・C…）に合わせる。
-  Widget _detailBuilder(BuildContext context, Question q) => QuestionDetailScreen(
-        question: q,
-        choiceLabels: const ['A', 'B', 'C', 'D', 'E', 'F'],
-      );
 
   void _push(BuildContext context, String title, Widget body) =>
       Navigator.of(context).push(MaterialPageRoute<void>(
@@ -92,7 +77,7 @@ class HomeScreen extends ConsumerWidget {
     final userDate = ref.watch(examDateProvider);
     final theme = Theme.of(context);
     final adGate = ref.watch(adGateProvider);
-    final termReferences = ref.watch(examDataProvider).valueOrNull?.termReferences ?? const [];
+    // 間違いノート・メモ・用語集・読み物・用語マップ・AI動向は「学ぶ」タブの「道具」へ移動した（LearnToolsSection）。
     final examDate = userDate ?? (exam.examDates.isEmpty ? null : exam.examDates.first);
 
     // 体験ラボ（データがあるものだけ並べる。条件は従来どおり）。
@@ -256,14 +241,6 @@ class HomeScreen extends ConsumerWidget {
                     subtitle: '本番のペース感覚を短縮版（20問・14分）で体感します。',
                     onTap: () => _push(context, '145問ペース走', PaceRunScreen(questions: questions)),
                   ),
-                  const SizedBox(height: 8),
-                  HomeMenuTile(
-                    icon: Icons.edit_note_outlined,
-                    title: '間違いノート',
-                    subtitle: '間違えた問題を見返して、解き直せます。',
-                    onTap: () =>
-                        openMistakeNote(context, exam: exam, questions: questions, terms: terms),
-                  ),
                 ],
               ),
             ),
@@ -324,71 +301,7 @@ class HomeScreen extends ConsumerWidget {
               ),
             ),
           ),
-          // ④ 道具
-          _PersistedSection(
-            id: 'tools',
-            title: '道具',
-            subtitle: '調べる・見返す',
-            leading: const Icon(Icons.handyman_outlined),
-            collapsible: true,
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  if (aiNewsItems.isNotEmpty)
-                    AiNewsCard(
-                      items: [
-                        for (final n in aiNewsItems)
-                          AiNewsItemSpec(
-                            summary: n.summary,
-                            sourceUrl: n.sourceUrl,
-                            sourceDate: n.sourceDate,
-                            syllabusTag: n.syllabusTag,
-                            asOfDate: n.asOfDate,
-                            isExamRelevant: n.isExamRelevant,
-                          ),
-                      ],
-                    ),
-                  StudyNotesHomeCards(
-                      loadQuestions: () async => questions, detailBuilder: _detailBuilder),
-                  const SizedBox(height: 4),
-                  HomeMenuTile(
-                    icon: Icons.menu_book_outlined,
-                    title: '用語集',
-                    subtitle: '収録${terms.length}語。わからない用語をいつでも調べられます。',
-                    onTap: () => _push(context, '用語集', TermsScreen(exam: exam, terms: terms)),
-                  ),
-                  if (chapterReadings.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    HomeMenuTile(
-                      icon: Icons.auto_stories_outlined,
-                      title: '章ごとの解説読み物',
-                      subtitle: '公式の章立てに沿って、学習項目を体系的に読めます。',
-                      onTap: () => _push(
-                        context,
-                        '章ごとの解説読み物',
-                        ReadingListScreen(
-                          readings: chapterReadings,
-                          terms: terms,
-                          questions: questions,
-                          termReferences: termReferences,
-                        ),
-                      ),
-                    ),
-                  ],
-                  const SizedBox(height: 8),
-                  HomeMenuTile(
-                    icon: Icons.hub_outlined,
-                    title: '用語マップ・AI系譜図',
-                    subtitle: '関連する用語をつないだ地図と、AIの歴史のタイムラインです。',
-                    onTap: () => _push(context, '用語マップ・AI系譜図', TermMapScreen(terms: terms)),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          // ⑤ 体験ラボ（数が多いので初期は畳む。開閉は端末に保存）
+          // ④ 体験ラボ（数が多いので初期は畳む。開閉は端末に保存）
           if (labItems.isNotEmpty)
             _PersistedSection(
               id: 'lab',

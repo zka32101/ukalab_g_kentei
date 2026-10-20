@@ -70,6 +70,9 @@ void main() {
     });
     await tester.pumpAndSettle();
 
+    // 用語集は「学ぶ」タブの「道具」にある（ホームから移動した）。
+    await tester.tap(find.text('学ぶ'));
+    await tester.pumpAndSettle();
     await tester.ensureVisible(find.text('用語集'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('用語集'));

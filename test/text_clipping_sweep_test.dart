@@ -188,13 +188,17 @@ Future<List<String>> _tileTitles(WidgetTester tester) async {
   return titles;
 }
 
-const _homeTargets = [
-  '用語集',
-  '最短ルートプランナー',
-  '145問ペース走',
+/// 「学ぶ」タブの「道具」（ホームから移った入口）。
+const _learnTargets = [
   '間違いノート',
+  '用語集',
   '章ごとの解説読み物',
   '用語マップ・AI系譜図',
+];
+
+const _homeTargets = [
+  '最短ルートプランナー',
+  '145問ペース走',
   'AIと法律の境界線',
   '予測→実行',
   '推しの答案を添削',
@@ -262,6 +266,19 @@ Future<_Report> _sweep(WidgetTester tester) async {
         }
       });
     }
+    for (final t in _learnTargets) {
+      await step('learn>$t', () async {
+        await _gotoTab(tester, '学ぶ');
+        await _scrollTop(tester);
+        final f = find.text(t);
+        await tester.scrollUntilVisible(f, 300,
+            scrollable: find.byType(Scrollable).first, maxScrolls: 80);
+        await tester.tap(f.first, warnIfMissed: false);
+        await _settle(tester);
+        await _scrollAll(tester);
+        await _back(tester);
+      });
+    }
     final labels = tester
         .widgetList<NavigationDestination>(find.byType(NavigationDestination))
         .map((d) => d.label)
@@ -309,8 +326,11 @@ Future<_Report> _sweep(WidgetTester tester) async {
         await _scrollAll(tester);
       });
     }
-    await step('学習後 home>間違いノート', () async {
-      await _gotoTab(tester, 'ホーム');
+    await step('学習後 learn>間違いノート', () async {
+      await _gotoTab(tester, '学ぶ');
+      await _scrollTop(tester);
+      await tester.scrollUntilVisible(find.text('間違いノート'), 300,
+          scrollable: find.byType(Scrollable).first, maxScrolls: 80);
       if (await _tap(tester, find.text('間違いノート'))) {
         await _scrollAll(tester);
         await _back(tester);

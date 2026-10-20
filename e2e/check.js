@@ -3,6 +3,7 @@
 // 期待値は環境変数で渡す（アプリごとに違うため）:
 //   E2E_SETTINGS   設定タブに出るはずの文言（カンマ区切り）
 //   E2E_EXAM_DATE  1 なら、受験日の入力→再読み込みで残る→解除 を確認する
+//   E2E_HOME / E2E_LEARN / E2E_MOCK  ホーム／学ぶ／模擬に出るはずの文言（カンマ区切り）
 // Flutter Web は文字をキャンバスに描くので、アクセシビリティ（semantics）を有効にして文字とボタンを拾う。
 const { chromium } = require('playwright');
 
@@ -73,6 +74,17 @@ function check(name, ok) {
     await page.screenshot({ path: `${shots}/tab-${t}.png` });
   }
   check('ページエラーなし（各タブ）', errors.length === 0);
+
+  // アプリ固有の文言（ホーム／学ぶ／模擬）。E2E_HOME / E2E_LEARN / E2E_MOCK にカンマ区切りで渡す。
+  const expectOn = async (tab, env) => {
+    const items = (process.env[env] || '').split(',').filter(Boolean);
+    if (!items.length) return;
+    await click(tab);
+    for (const s of items) check(`${tab}に「${s}」`, await waitText(s));
+  };
+  await expectOn('ホーム', 'E2E_HOME');
+  await expectOn('学ぶ', 'E2E_LEARN');
+  await expectOn('模擬', 'E2E_MOCK');
 
   // 設定タブ
   await click('設定');

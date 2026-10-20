@@ -5,7 +5,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ukalab_core/ui.dart';
 import 'package:ukalab_g_kentei/main.dart';
+import 'package:ukalab_g_kentei/screens/learn_screen.dart';
 import 'package:ukalab_g_kentei/screens/mistake_note_screen.dart';
+import 'package:ukalab_g_kentei/screens/reading_screen.dart';
+import 'package:ukalab_g_kentei/screens/term_map_screen.dart';
+import 'package:ukalab_g_kentei/data/exam_repository.dart';
 
 import 'test_support.dart';
 
@@ -66,17 +70,17 @@ Future<void> _tapText(WidgetTester tester, String text) async {
 void main() {
   testWidgets('各グループの見出しが表示される', (tester) async {
     await _boot(tester);
-    for (final h in ['今日やること', '記録', '試験に向けて', '道具', '体験ラボ']) {
+    for (final h in ['今日やること', '記録', '試験に向けて', '体験ラボ']) {
       // 「記録」は下のタブ名にもあるので、見出し部品の中で探す。
       expect(find.widgetWithText(HomeSectionHeader, h), findsOneWidget, reason: h);
     }
-    expect(find.byType(HomeSectionHeader), findsNWidgets(5));
+    expect(find.byType(HomeSectionHeader), findsNWidgets(4));
   });
 
-  testWidgets('体験ラボは初期は畳まれ、道具などは展開されている', (tester) async {
+  testWidgets('体験ラボは初期は畳まれ、今日やることなどは展開されている', (tester) async {
     await _boot(tester);
     expect(find.text('AIと法律の境界線'), findsNothing);
-    expect(find.text('用語集'), findsOneWidget);
+    expect(find.text('最短ルートプランナー'), findsOneWidget);
     expect(find.text('最短ルートプランナー'), findsOneWidget);
     expect(find.text('収録問題数'), findsOneWidget);
   });
@@ -87,10 +91,7 @@ void main() {
       'ながらセッション',
       '最短ルートプランナー',
       '145問ペース走',
-      '間違いノート',
       '収録問題数',
-      '用語集',
-      '用語マップ・AI系譜図',
     ]) {
       expect(find.text(t), findsOneWidget, reason: t);
     }
@@ -100,13 +101,63 @@ void main() {
     }
   });
 
-  testWidgets('代表的な入口をタップすると遷移できる', (tester) async {
+  testWidgets('間違いノート・メモ・用語集・読み物・用語マップはホームから「学ぶ」の「道具」へ移った', (tester) async {
     await _boot(tester);
+    for (final t in ['間違いノート', '用語集', '章ごとの解説読み物', '用語マップ・AI系譜図']) {
+      expect(find.text(t), findsNothing, reason: 'ホームに $t は無い');
+    }
+    expect(find.byType(StudyNotesHomeCards), findsNothing);
+    expect(find.widgetWithText(HomeSectionHeader, '道具'), findsNothing);
+  });
+
+  testWidgets('「学ぶ」の「道具」から全入口に行ける', (tester) async {
+    await _boot(tester);
+    await _tapText(tester, '学ぶ');
+    expect(find.widgetWithText(HomeSectionHeader, '道具'), findsOneWidget);
+    await tester.ensureVisible(find.byType(StudyNotesHomeCards));
+    expect(find.byType(StudyNotesHomeCards), findsOneWidget);
 
     await _tapText(tester, '間違いノート');
     expect(find.byType(MistakeNoteScreen), findsOneWidget);
     await tester.pageBack();
     await tester.pumpAndSettle();
+
+    await _tapText(tester, '用語集');
+    expect(find.text('用語を検索'), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await _tapText(tester, '章ごとの解説読み物');
+    expect(find.byType(ReadingListScreen), findsOneWidget);
+    await tester.pageBack();
+    await tester.pumpAndSettle();
+
+    await _tapText(tester, '用語マップ・AI系譜図');
+    expect(find.byType(TermMapScreen), findsOneWidget);
+  });
+
+  testWidgets('演習だけを開く使い方（exam なし）では「道具」を出さない', (tester) async {
+    await tester.runAsync(() async {
+      final data = await loadExamData();
+      SharedPreferences.setMockInitialValues({});
+      await tester.pumpWidget(ProviderScope(
+        overrides: [
+          handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
+          ...studyNotesTestOverrides(),
+          adGateProvider.overrideWithValue(await testAdGate()),
+        ],
+        child: MaterialApp(
+          home: Scaffold(body: LearnScreen(questions: data.activeQuestions, terms: data.terms)),
+        ),
+      ));
+      await Future.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pumpAndSettle();
+    expect(find.widgetWithText(HomeSectionHeader, '道具'), findsNothing);
+  });
+
+  testWidgets('代表的な入口をタップすると遷移できる', (tester) async {
+    await _boot(tester);
 
     await _tapText(tester, 'ながらセッション');
     expect(find.text('全体から'), findsOneWidget);
@@ -143,28 +194,25 @@ void main() {
     var prefs = await tester.runAsync(SharedPreferences.getInstance);
     expect(prefs!.getBool('${_keyPrefix}lab'), isTrue);
 
-    // 道具を畳む → false が保存され、用語集が隠れる。
-    await _tapText(tester, '道具');
-    expect(find.text('用語集'), findsNothing);
+    // 体験ラボを畳む → false が保存され、入口が隠れる。
+    await _tapText(tester, '体験ラボ');
+    expect(find.text('AIと法律の境界線'), findsNothing);
     prefs = await tester.runAsync(SharedPreferences.getInstance);
-    expect(prefs!.getBool('${_keyPrefix}tools'), isFalse);
+    expect(prefs!.getBool('${_keyPrefix}lab'), isFalse);
 
     // もう一度開く。
-    await _tapText(tester, '道具');
-    expect(find.text('用語集'), findsOneWidget);
+    await _tapText(tester, '体験ラボ');
+    expect(find.text('AIと法律の境界線'), findsOneWidget);
   });
 
   testWidgets('保存された開閉状態で起動する', (tester) async {
     await _boot(tester, prefs: {
-      '${_keyPrefix}lab': true,
-      '${_keyPrefix}tools': false,
+      '${_keyPrefix}lab': false,
     });
-    expect(find.text('AIと法律の境界線'), findsOneWidget);
-    expect(find.text('用語集'), findsNothing);
+    expect(find.text('AIと法律の境界線'), findsNothing);
     // 畳んでいても見出しは残り、開けば入口に届く。
-    await _tapText(tester, '道具');
-    expect(find.text('用語集'), findsOneWidget);
-    expect(find.text('用語マップ・AI系譜図'), findsOneWidget);
+    await _tapText(tester, '体験ラボ');
+    expect(find.text('AIと法律の境界線'), findsOneWidget);
   });
 
   testWidgets('狭い幅と大きい文字でもオーバーフローしない', (tester) async {
@@ -182,8 +230,8 @@ void main() {
     expect(find.byKey(const ValueKey('home-grid-1')), findsOneWidget);
     expect(tester.takeException(), isNull);
 
-    await _tapText(tester, '道具');
-    await _tapText(tester, '道具');
+    await _tapText(tester, '体験ラボ');
+    await _tapText(tester, '体験ラボ');
     expect(tester.takeException(), isNull);
   });
 }
