@@ -149,8 +149,10 @@ void main() {
     expect(find.text('プレミアムでできること'), findsOneWidget);
     expect(find.text(PremiumBenefitsStrings.ja.benefits.values.first.name), findsOneWidget);
     expect(find.byKey(const ValueKey('premiumFreeNote')), findsOneWidget);
-    expect(find.textContaining('合格保証'), findsNothing);
-    expect(find.textContaining('公式の'), findsNothing);
+    // 「公式」「合格保証」は使わない（設定の非公式の注記には出るので、カードの範囲に限る）。
+    final card = find.byType(PremiumBenefitsCard);
+    expect(find.descendant(of: card, matching: find.textContaining('合格保証')), findsNothing);
+    expect(find.descendant(of: card, matching: find.textContaining('公式')), findsNothing);
   });
 
   testWidgets('広告非表示だけの購入者にはカードが残り、プレミアム購入者には出ない', (tester) async {
