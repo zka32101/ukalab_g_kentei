@@ -1,10 +1,17 @@
 import 'package:app_common_kit/app_common_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:flutter/services.dart' show Clipboard, ClipboardData;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:ukalab_core/ui.dart' show DataManagementSection;
-import 'package:ukalab_core/ukalab_core.dart' show ExamConfig, Question, Term, historyCsv;
+import 'package:ukalab_core/ui.dart'
+    show
+        DataManagementSection,
+        ExamPrepStrings,
+        FileSaver,
+        PremiumBenefitsCard,
+        PremiumBenefitsStrings,
+        historyCsvFileName,
+        shareCsv;
+import 'package:ukalab_core/ukalab_core.dart' show ExamConfig, Question, Term, historyCsvText;
 
 import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromoSection;
 import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
@@ -24,7 +31,15 @@ class SettingsScreen extends ConsumerWidget {
     this.questions = const [],
     this.exam,
     this.terms = const [],
+    this.fileSaver,
+    this.now,
   });
+
+  /// 履歴CSVの渡し方。null なら core の既定（Web はダウンロード、他は共有シート）。テスト用に差し替える。
+  final FileSaver? fileSaver;
+
+  /// CSVのファイル名の日付に使う現在時刻。null なら `DateTime.now`。
+  final DateTime Function()? now;
 
   /// 間違いノートの「解き直す」で演習画面を開くために使う。省略時は間違いノートの入口を出さない。
   final ExamConfig? exam;
@@ -79,10 +94,13 @@ class SettingsScreen extends ConsumerWidget {
           date: ref.watch(examDateProvider),
           onChanged: (d) => ref.read(examDateProvider.notifier).setDate(d),
         ),
-        ListTile(
-          title: const Text('学習履歴をコピー（CSV）'),
-          subtitle: const Text('日ごと・分野ごとの解答数と正答率。個人情報は含みません。'),
-          onTap: () => _copyHistory(context, ref),
+        Builder(
+          builder: (tileContext) => ListTile(
+            key: const ValueKey('downloadHistoryCsv'),
+            title: const Text('学習履歴をダウンロード（CSV）'),
+            subtitle: const Text('日ごと・分野ごとの解答数と正答率。個人情報は含みません。'),
+            onTap: () => _saveHistory(tileContext, ref),
+          ),
         ),
         const Divider(height: 24),
         const Padding(
@@ -90,6 +108,11 @@ class SettingsScreen extends ConsumerWidget {
           child: Text('購入', style: TextStyle(fontWeight: FontWeight.bold)),
         ),
         const SizedBox(height: 8),
+        // プレミアム購入者には出さない（広告非表示だけの人には、上位のプレミアムの案内として出す）。
+        if (!entitlement.hasPremium) ...[
+          PremiumBenefitsCard(strings: _premiumBenefitsStrings),
+          const SizedBox(height: 8),
+        ],
         if (entitlement.adsHidden)
           ListTile(
             leading: const Icon(Icons.check_circle, color: Colors.green),
@@ -149,14 +172,30 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _copyHistory(BuildContext context, WidgetRef ref) async {
+  Future<void> _saveHistory(BuildContext context, WidgetRef ref) async {
+    final strings = ExamPrepStrings.ja;
     final records = ref.read(historyProvider);
-    final message = records.isEmpty ? 'まだ学習履歴がありません。' : '学習履歴をコピーしました。';
-    if (records.isNotEmpty) {
-      await Clipboard.setData(ClipboardData(text: historyCsv(records, questions)));
+    final messenger = ScaffoldMessenger.of(context);
+    String? message;
+    if (records.isEmpty) {
+      message = 'まだ学習履歴がありません。';
+    } else {
+      // iPad の共有シートの位置（タイルの矩形）。
+      final box = context.findRenderObject() as RenderBox?;
+      final origin = box != null && box.hasSize ? box.localToGlobal(Offset.zero) & box.size : null;
+      try {
+        final done = await shareCsv(
+          csv: historyCsvText(records, questions),
+          fileName: historyCsvFileName((now ?? DateTime.now)()),
+          saver: fileSaver,
+          sharePositionOrigin: origin,
+        );
+        if (done) message = strings.exportSaved;
+      } catch (_) {
+        message = strings.exportSaveFailed;
+      }
     }
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    if (message != null) messenger.showSnackBar(SnackBar(content: Text(message)));
   }
 
   Future<void> _purchase(BuildContext context, WidgetRef ref, EntitlementOffer offer) async {
@@ -178,6 +217,14 @@ class SettingsScreen extends ConsumerWidget {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 }
+
+/// プレミアムでできること。機能の一覧と説明は core の既定（日本語）で、実装済みの機能だけを載せる。
+/// 見出しと「無料の範囲」の一文だけ、このアプリの購入（広告非表示を含む）に合わせる。
+final _premiumBenefitsStrings = PremiumBenefitsStrings(
+  title: 'プレミアムでできること',
+  freeNote: 'プレミアムでは広告も表示されません。問題・解説・模擬試験・基本の苦手特訓は、無料のまま使えます。',
+  benefits: PremiumBenefitsStrings.ja.benefits,
+);
 
 /// ながらセッションの設定(考える間・次までの間・自動で次へ・解説を読む)。
 /// ラベルと候補値は app_common_kit のもの。ながら学習モードのオン/オフとは独立に使える。
