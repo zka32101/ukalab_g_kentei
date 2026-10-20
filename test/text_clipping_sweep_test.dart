@@ -154,6 +154,17 @@ Future<void> _scrollAll(WidgetTester tester) async {
   await _settle(tester);
 }
 
+/// 「学ぶ」など縦に長い画面で、[f] が組まれるまで下へ送る（見つからなければ例外で気づく）。
+Future<void> _scrollToFind(WidgetTester tester, Finder f) async {
+  for (var i = 0; i < 60 && f.evaluate().isEmpty; i++) {
+    final sc = find.byType(Scrollable);
+    if (sc.evaluate().isEmpty) break;
+    await tester.drag(sc.first, const Offset(0, -300), warnIfMissed: false);
+    await tester.pump(const Duration(milliseconds: 30));
+  }
+  expect(f, findsWidgets, reason: '${f.description} に届くこと');
+}
+
 Future<void> _scrollTop(WidgetTester tester) async {
   final scrollable = find.byType(Scrollable);
   if (scrollable.evaluate().isEmpty) return;
@@ -271,8 +282,9 @@ Future<_Report> _sweep(WidgetTester tester) async {
         await _gotoTab(tester, '学ぶ');
         await _scrollTop(tester);
         final f = find.text(t);
-        await tester.scrollUntilVisible(f, 300,
-            scrollable: find.byType(Scrollable).first, maxScrolls: 80);
+        await _scrollToFind(tester, f);
+        await tester.ensureVisible(f.first);
+        await _settle(tester);
         await tester.tap(f.first, warnIfMissed: false);
         await _settle(tester);
         await _scrollAll(tester);
@@ -329,8 +341,7 @@ Future<_Report> _sweep(WidgetTester tester) async {
     await step('学習後 learn>間違いノート', () async {
       await _gotoTab(tester, '学ぶ');
       await _scrollTop(tester);
-      await tester.scrollUntilVisible(find.text('間違いノート'), 300,
-          scrollable: find.byType(Scrollable).first, maxScrolls: 80);
+      await _scrollToFind(tester, find.text('間違いノート'));
       if (await _tap(tester, find.text('間違いノート'))) {
         await _scrollAll(tester);
         await _back(tester);

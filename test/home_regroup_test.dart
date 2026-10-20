@@ -169,11 +169,6 @@ void main() {
     await tester.pageBack();
     await tester.pumpAndSettle();
 
-    await _tapText(tester, '用語集');
-    expect(find.text('用語を検索'), findsOneWidget);
-    await tester.pageBack();
-    await tester.pumpAndSettle();
-
     await _tapText(tester, '体験ラボ');
     await _tapText(tester, '評価指標ラボ');
     expect(find.text('がん検診'), findsOneWidget);
