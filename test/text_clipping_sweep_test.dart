@@ -169,7 +169,7 @@ Future<void> _scrollToFind(WidgetTester tester, Finder f) async {
       .where((t) => t.isNotEmpty)
       .take(40)
       .join(' | ');
-  expect(f, findsWidgets, reason: '目的の文言に届くこと。画面の文言: $seen');
+  if (f.evaluate().isEmpty) throw StateError('届かない。画面の文言: $seen');
 }
 
 Future<void> _scrollTop(WidgetTester tester) async {
