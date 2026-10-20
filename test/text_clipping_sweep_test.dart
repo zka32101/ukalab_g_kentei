@@ -162,7 +162,14 @@ Future<void> _scrollToFind(WidgetTester tester, Finder f) async {
     await tester.drag(sc.first, const Offset(0, -300), warnIfMissed: false);
     await tester.pump(const Duration(milliseconds: 30));
   }
-  expect(f, findsWidgets, reason: '目的の文言に届くこと');
+  final seen = find
+      .byType(Text, skipOffstage: false)
+      .evaluate()
+      .map((e) => (e.widget as Text).data ?? '')
+      .where((t) => t.isNotEmpty)
+      .take(40)
+      .join(' | ');
+  expect(f, findsWidgets, reason: '目的の文言に届くこと。画面の文言: $seen');
 }
 
 Future<void> _scrollTop(WidgetTester tester) async {
