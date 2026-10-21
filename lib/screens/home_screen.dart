@@ -13,6 +13,7 @@ import '../widgets/core_v069_home_cards.dart';
 import '../widgets/oshi_card.dart';
 import '../widgets/oshi_home_cards.dart';
 import 'nagara_entry.dart';
+import 'settings_screen.dart' as app_settings;
 import 'ai_project_screen.dart';
 import 'attention_viz_screen.dart';
 import 'boundary_screen.dart';
@@ -191,7 +192,16 @@ class HomeScreen extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 16),
-                OshiCard(totalQuestions: questions.length, examDate: examDate),
+                OshiCard(
+                  totalQuestions: questions.length,
+                  examDate: examDate,
+                  // ロック中の資格専用キャラ(ノーダ)のプレビューから設定の購入欄へ誘導する。
+                  settingsBuilder: () => app_settings.SettingsScreen(
+                    questions: questions,
+                    exam: exam,
+                    terms: terms,
+                  ),
+                ),
                 const SizedBox(height: 8),
                 // 推しの一言(無料)。タップで別の一言。
                 OshiMessageCard(examDate: examDate),
