@@ -11,12 +11,14 @@ import 'package:ukalab_core/ui.dart'
         PremiumBenefitsStrings,
         historyCsvFileName,
         shareCsv;
-import 'package:ukalab_core/ukalab_core.dart' show ExamConfig, Question, Term, historyCsvText;
+import 'package:ukalab_core/ukalab_core.dart'
+    show ExamConfig, PremiumFeature, Question, Term, historyCsvText;
 
 import 'package:ukalab_core/cross_promo.dart' show UkalabCrossPromoSection;
 import 'package:ukalab_core/daily_goal.dart' show DailyGoalSetting;
 import 'package:ukalab_core/reminder.dart' show ReminderSettingsSection;
 import 'package:ukalab_core/exam_date.dart';
+import '../data/core_features.dart' show isPremiumFor;
 import '../data/data_parts.dart';
 import '../data/history_store.dart';
 import '../widgets/peer_stats_settings_section.dart';
@@ -54,6 +56,7 @@ class SettingsScreen extends ConsumerWidget {
         ref.watch(entitlementStateProvider).valueOrNull ?? EntitlementState.free;
     final service = ref.watch(entitlementServiceProvider);
     final handsFree = ref.watch(handsFreeProvider);
+    final historyExportUnlocked = isPremiumFor(ref, PremiumFeature.historyExport);
 
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -98,8 +101,14 @@ class SettingsScreen extends ConsumerWidget {
           builder: (tileContext) => ListTile(
             key: const ValueKey('downloadHistoryCsv'),
             title: const Text('学習履歴をダウンロード（CSV）'),
-            subtitle: const Text('日ごと・分野ごとの解答数と正答率。個人情報は含みません。'),
-            onTap: () => _saveHistory(tileContext, ref),
+            // 無料ではロック表示（core の書き出し入口 exportTile と同じ扱い）。
+            subtitle: Text(historyExportUnlocked
+                ? '日ごと・分野ごとの解答数と正答率。個人情報は含みません。'
+                : ExamPrepStrings.ja.premiumNote),
+            trailing: historyExportUnlocked ? null : const Icon(Icons.lock_outline),
+            onTap: () => historyExportUnlocked
+                ? _saveHistory(tileContext, ref)
+                : _showPremiumNote(tileContext),
           ),
         ),
         const Divider(height: 24),
@@ -170,6 +179,14 @@ class SettingsScreen extends ConsumerWidget {
         const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
       ],
     );
+  }
+
+  /// 無料ユーザーがロック中の書き出しを押したとき。保存はせず、プレミアムの案内を出す
+  /// （購入欄はこの画面の下にある）。
+  void _showPremiumNote(BuildContext context) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(ExamPrepStrings.ja.premiumNote)));
   }
 
   Future<void> _saveHistory(BuildContext context, WidgetRef ref) async {

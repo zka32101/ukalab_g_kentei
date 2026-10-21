@@ -174,11 +174,15 @@ void main() {
   });
 
   group('学習履歴のCSV', () {
-    Future<ProviderContainer> seeded(WidgetTester tester, {required bool withRecord}) async {
+    Future<ProviderContainer> seeded(WidgetTester tester,
+        {required bool withRecord, bool premium = true}) async {
       SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer(overrides: [
         entitlementServiceProvider.overrideWithValue(_service()),
         handsFreeStoreProvider.overrideWithValue(InMemoryHandsFreeStore()),
+        if (premium)
+          entitlementStateProvider.overrideWith(
+              (ref) => Stream.value(const EntitlementState(hasPremium: true))),
         ...studyNotesTestOverrides(),
       ]);
       addTearDown(container.dispose);
@@ -200,7 +204,32 @@ void main() {
           ),
         );
 
-    testWidgets('タップするとファイル保存（UTF-8 BOM・text/csv・日付入りの名前）を呼び、クリップボードは使わない', (tester) async {
+    testWidgets('無料ではロック表示で、タップしても保存せず「プレミアムで使えます」を出す', (tester) async {
+      var called = false;
+      final container = await seeded(tester, withRecord: true, premium: false);
+      _tall(tester);
+      await tester.pumpWidget(host(container, ({
+        required Uint8List bytes,
+        required String fileName,
+        required String mimeType,
+        Rect? sharePositionOrigin,
+      }) async {
+        called = true;
+        return true;
+      }));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const ValueKey('downloadHistoryCsv')), findsOneWidget);
+      await tester.tap(find.byKey(const ValueKey('downloadHistoryCsv')));
+      await tester.pumpAndSettle();
+
+      expect(called, isFalse);
+      expect(find.text('書き出しました'), findsNothing);
+      expect(find.descendant(of: find.byType(SnackBar), matching: find.text('プレミアムで使えます')),
+          findsOneWidget);
+    });
+
+    testWidgets('プレミアム: タップするとファイル保存（UTF-8 BOM・text/csv・日付入りの名前）を呼び、クリップボードは使わない', (tester) async {
       final calls = <({Uint8List bytes, String fileName, String mimeType})>[];
       final container = await seeded(tester, withRecord: true);
       _tall(tester);
