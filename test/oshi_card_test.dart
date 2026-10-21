@@ -4,8 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:ukalab_g_kentei/widgets/oshi_card.dart';
 
-Widget _app(Widget child) => ProviderScope(
+Widget _app(Widget child, {List<Override> extra = const []}) => ProviderScope(
       overrides: [
+        ...extra,
         coinServiceProvider.overrideWithValue(CoinService(store: InMemoryCoinStore())),
         outfitServiceProvider.overrideWithValue(OutfitService(store: InMemoryOutfitStore())),
       ],
@@ -96,5 +97,49 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.textContaining('の結果を教えてください'), findsOneWidget);
+  });
+
+  testWidgets('UkalabOshiCard に onLockedTap が渡っている（資格キャラの購入導線）', (tester) async {
+    await tester.pumpWidget(_app(const OshiCard(totalQuestions: 600)));
+    await tester.pumpAndSettle();
+
+    final card = tester.widget<UkalabOshiCard>(find.byType(UkalabOshiCard));
+    expect(card.onLockedTap, isNotNull);
+  });
+
+  testWidgets('ロック中のノーダのプレビューから「プレミアムを見る」で設定へ誘導する', (tester) async {
+    tester.view.physicalSize = const Size(400, 1400);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(_app(
+      OshiCard(
+        totalQuestions: 600,
+        settingsBuilder: () => const Text('設定の購入欄スタブ'),
+      ),
+      extra: [
+        characterAppIdProvider.overrideWithValue('g_kentei'),
+        characterPremiumProvider.overrideWithValue(false),
+      ],
+    ));
+    await tester.pump();
+    await tester.tap(find.byTooltip('推しのメニュー'));
+    await tester.pump(const Duration(milliseconds: 500));
+    final item = find.ancestor(of: find.text('推しを選ぶ'), matching: find.byType(InkWell)).first;
+    tester.widget<InkWell>(item).onTap!();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+    await tester.scrollUntilVisible(find.text('ノーダ'), 200, scrollable: find.byType(Scrollable).first);
+    await tester.ensureVisible(find.text('ノーダ'));
+    await tester.pump();
+    await tester.tap(find.text('ノーダ'));
+    await tester.pump(const Duration(milliseconds: 300));
+
+    expect(find.text('プレミアムを見る'), findsOneWidget);
+    await tester.tap(find.text('プレミアムを見る'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 500));
+
+    expect(find.text('設定の購入欄スタブ'), findsOneWidget);
+    expect(find.byType(CharacterSelectScreen), findsNothing);
   });
 }

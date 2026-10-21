@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/progress_store.dart';
+import '../screens/settings_screen.dart';
 import 'oshi_medal_button.dart';
 
 /// 網羅率＝解いた問題の種類数÷全問題数、正答率＝qidごとの最新の正誤に基づく
@@ -37,13 +38,37 @@ MascotStage oshiStageFor({
 /// ホームの「推し」カード。共通キットの [UkalabOshiCard] に、G検定の成長段階・連続日数・
 /// 試験日を渡す。推しの選択・着替え・合格報告・表示切替・コイン表示はキット側。
 class OshiCard extends ConsumerWidget {
-  const OshiCard({super.key, required this.totalQuestions, this.examDate});
+  const OshiCard({
+    super.key,
+    required this.totalQuestions,
+    this.examDate,
+    this.settingsBuilder,
+  });
+
+  /// 設定画面を作る関数。ロック中の資格専用キャラ（ノーダ）のプレビューで「プレミアムを見る」が
+  /// 押されたとき、設定（購入欄）を開くために使う。null なら引数なしの [SettingsScreen] を開く。
+  final Widget Function()? settingsBuilder;
 
   /// 出題範囲の全問題数（網羅率の分母）。
   final int totalQuestions;
 
   /// 試験日（設定した人だけ）。
   final DateTime? examDate;
+
+  /// 推しの選択画面を閉じて、設定（購入欄）を画面として開く。
+  /// 下部タブの切り替えは [UkalabShell] の内部状態で外から操作できないため、画面を push する。
+  void _openSettings(BuildContext context) {
+    final navigator = Navigator.of(context);
+    navigator.popUntil((route) => route.isFirst);
+    navigator.push(
+      MaterialPageRoute<void>(
+        builder: (_) => Scaffold(
+          appBar: AppBar(title: const Text('設定')),
+          body: SafeArea(child: (settingsBuilder ?? () => const SettingsScreen())()),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,6 +89,7 @@ class OshiCard extends ConsumerWidget {
           examDate: examDate,
           streakDays: progress.streakDays,
           studiedToday: progress.lastStudyDay == studyDayKey(now),
+          onLockedTap: () => _openSettings(context),
         ),
         Align(
           alignment: Alignment.centerRight,
