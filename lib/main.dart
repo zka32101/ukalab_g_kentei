@@ -17,6 +17,7 @@ import 'package:ukalab_core/reminder_notification.dart'
     show ReminderNotificationWatcher, reminderNotifierProvider;
 import 'package:ukalab_core/exam_date.dart';
 import 'package:ukalab_core/mock_exam_history.dart';
+import 'data/character_wiring.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';
@@ -141,6 +142,7 @@ void main() async {
       outfitServiceProvider.overrideWithValue(outfitService),
       entitlementServiceProvider.overrideWithValue(entitlementService),
       adGateProvider.overrideWithValue(adGate),
+      ...characterOverrides,
       examStatsServiceProvider.overrideWithValue(examStatsService),
       handsFreeStoreProvider.overrideWithValue(SharedPreferencesHandsFreeStore('g_kentei')),
       examDateStoreProvider.overrideWithValue(ExamDateStore('g_kentei')),
