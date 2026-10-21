@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:ukalab_g_kentei/data/progress_store.dart';
 import 'package:ukalab_g_kentei/screens/learn_screen.dart';
 import 'package:ukalab_core/ukalab_core.dart';
+import 'package:ukalab_core/learning.dart';
 
 import 'test_support.dart';
 
