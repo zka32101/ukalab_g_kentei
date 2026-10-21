@@ -129,3 +129,12 @@ G検定,ジェネラリスト検定,ディープラーニング,AI,機械学習,
 - データセーフティフォームの広告ID申告（完了未確認）
 - ストア本文に「広告が表示されます」を入れる条件: Android単独公開なら申告完了後、iOS同時公開ならiOS ID差し替え後
 - プライバシーポリシーURLの用意（Play Console提出必須）
+
+## Firebase 設定ファイル（相互紹介用）の注入
+
+`android/app/google-services.json` はコミットしない。リリースビルド（`build-aab.yml`）で次の Secret から生成する。
+
+- Secret 名: `GOOGLE_SERVICES_JSON_BASE64`
+- 登録手順: Firebase コンソールから取得した `google-services.json` を base64 化し（例: `base64 -w0 google-services.json`）、その出力を GitHub の Settings > Secrets and variables > Actions に登録する。
+- 未設定の場合は生成をスキップし、プラグイン未適用のままビルドされる（PR の test / web-e2e には影響しない）。
+- iOS の `GoogleService-Info.plist` は未対応（`.gitignore` のみ登録済み）。
