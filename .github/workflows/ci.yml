@@ -24,7 +24,8 @@ jobs:
         run: dart run ukalab_core:validate_content assets/exam/g_kentei.json --subtopic-scope=subject --terms assets/terms/g_kentei.jsonl assets/questions/g_kentei.jsonl
 
   web-e2e:
-    runs-on: ubuntu-latest
+    # Playwright が ubuntu 26.04 の chromium に未対応のため固定。対応後に ubuntu-latest へ戻す
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
