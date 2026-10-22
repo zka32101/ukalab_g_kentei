@@ -35,7 +35,7 @@ dependencies:
   timezone: ^0.10.1
 
   # 進捗・コインの端末内保存
-  shared_preferences: ">=2.3.0 <3.0.0"
+  shared_preferences: ^2.5.6
   package_info_plus: ^9.0.1
 
   # ながら学習モードの読み上げ（端末標準の音声合成）
