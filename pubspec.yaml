@@ -72,4 +72,5 @@ flutter_launcher_icons:
   image_path: "assets/icon/app_icon.png"
   adaptive_icon_background: "assets/icon/app_icon_background.png"
   adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  adaptive_icon_foreground_inset: 0  # 絵柄を大きく表示するため inset なし（再生成で復活させない）
   min_sdk_android: 21
