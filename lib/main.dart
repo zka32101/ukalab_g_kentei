@@ -212,10 +212,10 @@ class _RootPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final examData = ref.watch(examDataProvider);
     return examData.when(
-      loading: () => const StartupSplash(
-        appIconAsset: kStartupIconAsset,
+      loading: () => const UkalabStartupSplash(
+        iconAsset: kStartupIconAsset,
         backgroundColor: kStartupBackground,
-        appIconSize: 160,
+        iconSize: 160,
       ),
       error: (e, st) => Scaffold(
         body: ErrorState(
