@@ -3,6 +3,8 @@ import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../widgets/ai_draft_notice.dart';
+
 /// 「AIプロジェクト経営モード」一覧（画期的な機能8、ストーリー型）。架空の
 /// 会社でAI導入を進め、各段階で判断する。UIはストーリー型の共通エンジン
 /// StoryModeWidget を使う。
@@ -33,7 +35,11 @@ class AiProjectScreen extends StatelessWidget {
                   appBar: AppBar(title: Text(s.title)),
                   body: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
-                    child: StoryModeWidget(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isAiDraftSourceRef(s.sourceRef)) const AiDraftNotice(),
+                        StoryModeWidget(
                       scenario: StoryScenarioSpec(
                         title: s.title,
                         description: s.description,
@@ -53,6 +59,8 @@ class AiProjectScreen extends StatelessWidget {
                             ),
                         ],
                       ),
+                    ),
+                      ],
                     ),
                   ),
                 ),
