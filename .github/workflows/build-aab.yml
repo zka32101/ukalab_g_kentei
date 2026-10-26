@@ -24,8 +24,23 @@ jobs:
           keyAlias=${{ secrets.UPLOAD_KEY_ALIAS }}
           storeFile=/tmp/upload-keystore.jks
           EOF
+      - name: Firebase設定を復元（Secret未設定ならスキップ）
+        env:
+          GOOGLE_SERVICES_JSON_BASE64: ${{ secrets.GOOGLE_SERVICES_JSON_BASE64 }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON_BASE64" ]; then
+            echo "$GOOGLE_SERVICES_JSON_BASE64" | base64 -d > android/app/google-services.json
+          else
+            echo "GOOGLE_SERVICES_JSON_BASE64 未設定のためスキップ"
+          fi
       - run: flutter pub get
-      - run: flutter build appbundle --release
+      - name: AABをビルド（広告ユニットID・RevenueCatキーはSecretsから注入）
+        run: >
+          flutter build appbundle --release
+          --dart-define=RC_GOOGLE_KEY=${{ secrets.RC_GOOGLE_KEY }}
+          --dart-define=AD_BANNER_ID=${{ secrets.AD_BANNER_ID }}
+          --dart-define=AD_INTERSTITIAL_ID=${{ secrets.AD_INTERSTITIAL_ID }}
+          --dart-define=AD_REWARDED_ID=${{ secrets.AD_REWARDED_ID }}
       - uses: actions/upload-artifact@v4
         with:
           name: app-release-aab

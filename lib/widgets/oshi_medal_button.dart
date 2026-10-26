@@ -10,7 +10,7 @@ import 'package:ukalab_core/ui.dart'
         OshiMedal,
         OshiMedalView,
         equippedOutfitProvider,
-        selectedCharacterPackProvider,
+        effectiveCharacterPackProvider,
         showOshiMedalDialog;
 
 import '../data/oshi_medals.dart';
@@ -91,7 +91,7 @@ class OshiMedalButton extends ConsumerWidget {
     await showOshiMedalDialog(
       context,
       medal: picked,
-      pack: ref.read(selectedCharacterPackProvider),
+      pack: ref.read(effectiveCharacterPackProvider),
       stage: stage,
       outfit: outfit,
       now: now,

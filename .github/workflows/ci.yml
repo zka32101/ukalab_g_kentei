@@ -24,7 +24,8 @@ jobs:
         run: dart run ukalab_core:validate_content assets/exam/g_kentei.json --subtopic-scope=subject --terms assets/terms/g_kentei.jsonl assets/questions/g_kentei.jsonl
 
   web-e2e:
-    runs-on: ubuntu-latest
+    # Playwright が ubuntu 26.04 の chromium に未対応のため固定。対応後に ubuntu-latest へ戻す
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
@@ -47,8 +48,10 @@ jobs:
           npx playwright install --with-deps chromium
       - name: Serve and check
         env:
-          E2E_SETTINGS: '購入,ながら学習モード,受験日'
+          E2E_SETTINGS: '購入,プレミアムでできること,ながら学習モード,受験日'
           E2E_EXAM_DATE: '1'
+          E2E_HOME: 'うかラボ G検定,今日やること,最短ルートプランナー,145問ペース走'
+          E2E_LEARN: '道具,用語集,間違いノート'
         run: |
           (cd build/web && python3 -m http.server 8099 >/dev/null 2>&1 &)
           for i in $(seq 1 30); do curl -sf http://localhost:8099/ >/dev/null && break; sleep 1; done

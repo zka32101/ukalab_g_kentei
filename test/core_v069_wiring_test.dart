@@ -55,8 +55,7 @@ void main() {
     expect(find.byType(OshiGrowthSection), findsOneWidget); // 祝福の見張り役は残す
     expect(find.byType(OshiGrowthBubble, skipOffstage: false), findsNothing);
     expect(find.byType(MockExamAnalysisCard), findsNothing);
-    // 既存の入口は残っている。
-    expect(find.text('間違いノート'), findsOneWidget);
+    // 既存の入口は残っている（間違いノートは「学ぶ」の「道具」へ移った）。
     expect(find.text('収録問題数'), findsOneWidget);
   });
 

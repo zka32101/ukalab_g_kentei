@@ -110,15 +110,31 @@ G検定,ジェネラリスト検定,ディープラーニング,AI,機械学習,
 
 ## 6. データ収集・セキュリティの現状（調査結果）
 
-- 広告SDK（AdMob）: 有効。現在はGoogle公式テスト広告ユニットIDを使用中。
-  本番リリース前に本番広告ユニットIDへの切り替えと、Play Consoleの
-  データセーフティフォームで「広告ID」収集を申告する必要がある。
-- 購入（RevenueCat）・Firebase（匿名集計・コイン同期・学習データ引き継ぎ）:
-  コード実装済みだが `FakeEntitlementService` 等を使用しており未配線（外部送信なし）。
+- 広告SDK（AdMob）: 有効。Androidのリリースビルドは広告ユニットID・AdMobアプリIDとも
+  本番形式（2026-10-13にAdMobへ登録済み）。iOSとデバッグ/profileビルドはGoogle公式のテストID
+  （iOSは公開前に本番IDへ差し替え）。バナー/インタースティシャル（3分間隔・1日5回まで）
+  実装済みで、noads/premiumでは表示しない。
+  Play Consoleのデータセーフティフォームでの「広告ID」申告は完了未確認。
+- 購入（RevenueCat）: ビルド時に `RC_GOOGLE_KEY` を渡したAndroidのみ有効。それ以外のビルドと
+  iOS・Webは `FakeEntitlementService`（外部送信なし）。
+- Firebase（匿名集計・コイン同期・学習データ引き継ぎ）: コード実装済みだが
+  `Fake...Service` 等を使用しており未配線（外部送信なし）。
   配線する場合は事前にデータセーフティフォームの申告内容を更新すること。
 - クラッシュレポート・アナリティクスSDK: 未使用。
 - 学習進捗・コイン・履歴等: すべて端末内（shared_preferences）保存のみ。
 
 リリース前に対応が必要な項目:
-- AdMob本番IDへの切り替え＋データセーフティフォームの広告ID申告
+- AdMob残作業: iOSのアプリ・ユニット登録と本番IDへの差し替え、Play公開後のAdMobストア紐付け・審査
+  （それまで広告配信は制限される）
+- データセーフティフォームの広告ID申告（完了未確認）
+- ストア本文に「広告が表示されます」を入れる条件: Android単独公開なら申告完了後、iOS同時公開ならiOS ID差し替え後
 - プライバシーポリシーURLの用意（Play Console提出必須）
+
+## Firebase 設定ファイル（相互紹介用）の注入
+
+`android/app/google-services.json` はコミットしない。リリースビルド（`build-aab.yml`）で次の Secret から生成する。
+
+- Secret 名: `GOOGLE_SERVICES_JSON_BASE64`
+- 登録手順: Firebase コンソールから取得した `google-services.json` を base64 化し（例: `base64 -w0 google-services.json`）、その出力を GitHub の Settings > Secrets and variables > Actions に登録する。
+- 未設定の場合は生成をスキップし、プラグイン未適用のままビルドされる（PR の test / web-e2e には影響しない）。
+- iOS の `GoogleService-Info.plist` は未対応（`.gitignore` のみ登録済み）。

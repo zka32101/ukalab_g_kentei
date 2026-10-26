@@ -17,6 +17,7 @@ import 'package:ukalab_core/reminder_notification.dart'
     show ReminderNotificationWatcher, reminderNotifierProvider;
 import 'package:ukalab_core/exam_date.dart';
 import 'package:ukalab_core/mock_exam_history.dart';
+import 'data/character_wiring.dart';
 import 'data/exam_repository.dart';
 import 'screens/home_screen.dart';
 import 'screens/learn_screen.dart';
@@ -27,6 +28,12 @@ import 'services/local_reminder_notifier.dart';
 import 'services/no_ads_backend.dart';
 
 /// Google公式のテスト広告ユニットID。本番公開前に実際のIDへ差し替える（決定35）。
+/// 本番の広告ユニットID（Android）。ビルド時に
+/// `--dart-define=AD_BANNER_ID=ca-app-pub-.../...` などで渡す。リポジトリには置かない。
+const _adBannerId = String.fromEnvironment('AD_BANNER_ID');
+const _adInterstitialId = String.fromEnvironment('AD_INTERSTITIAL_ID');
+const _adRewardedId = String.fromEnvironment('AD_REWARDED_ID');
+
 AdUnitIds _adUnitIds() => kIsWeb
     // Web には広告SDKが無く、広告は出さない（NoAdsBackend）。リリースビルドでテストIDを
     // 使うと AdGate が例外にするため、Web では空のIDにする。
@@ -37,14 +44,12 @@ AdUnitIds _adUnitIds() => kIsWeb
         interstitial: 'ca-app-pub-3940256099942544/4411468910',
         rewarded: 'ca-app-pub-3940256099942544/1712485313',
       )
-    // Android: リリースビルドだけ本番の広告ユニット、それ以外（デバッグ・profile）は
-    // テスト広告。開発中に本物の広告を表示・クリックして不正クリック扱いになるのを避ける。
+    // Android: リリースビルドだけ本番の広告ユニット（ビルド時に --dart-define で渡す）。
+    // それ以外（デバッグ・profile）はテスト広告。開発中に本物の広告を表示・クリックして
+    // 不正クリック扱いになるのを避ける。リリースで未指定なら空のIDにして、広告を出さない
+    // （テストIDのままだと AdGate が例外にするため）。
     : kReleaseMode
-    ? const AdUnitIds(
-        banner: 'ca-app-pub-5058227312086483/8168849142',
-        interstitial: 'ca-app-pub-5058227312086483/8987106793',
-        rewarded: 'ca-app-pub-5058227312086483/8085088669',
-      )
+    ? const AdUnitIds(banner: _adBannerId, interstitial: _adInterstitialId, rewarded: _adRewardedId)
     : const AdUnitIds(
         banner: 'ca-app-pub-3940256099942544/6300978111',
         interstitial: 'ca-app-pub-3940256099942544/1033173712',
@@ -112,7 +117,8 @@ void main() async {
   final adGate = await AdGate.init(
     config: AdConfig(unitIds: _adUnitIds()),
     // Web には広告SDK（google_mobile_ads）が無いため、広告を出さない実装にする。
-    backend: kIsWeb ? NoAdsBackend() : null,
+    // 本番の広告ユニットIDが未指定(空)のリリースでも、広告SDKを使わず、広告なしで起動する。
+    backend: kIsWeb || _adUnitIds().banner.isEmpty ? NoAdsBackend() : null,
     adsHidden: () => entitlementService.state.adsHidden,
     isRelease: kReleaseMode,
   );
@@ -136,6 +142,7 @@ void main() async {
       outfitServiceProvider.overrideWithValue(outfitService),
       entitlementServiceProvider.overrideWithValue(entitlementService),
       adGateProvider.overrideWithValue(adGate),
+      ...characterOverrides,
       examStatsServiceProvider.overrideWithValue(examStatsService),
       handsFreeStoreProvider.overrideWithValue(SharedPreferencesHandsFreeStore('g_kentei')),
       examDateStoreProvider.overrideWithValue(ExamDateStore('g_kentei')),
@@ -205,10 +212,10 @@ class _RootPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final examData = ref.watch(examDataProvider);
     return examData.when(
-      loading: () => const StartupSplash(
-        appIconAsset: kStartupIconAsset,
+      loading: () => const UkalabStartupSplash(
+        iconAsset: kStartupIconAsset,
         backgroundColor: kStartupBackground,
-        appIconSize: 160,
+        iconSize: 160,
       ),
       error: (e, st) => Scaffold(
         body: ErrorState(
@@ -231,15 +238,19 @@ class _RootPage extends ConsumerWidget {
               confusionMatrixScenarios: data.confusionMatrixScenarios,
               methodChoiceScenarios: data.methodChoiceScenarios,
               mlLabDatasets: data.mlLabDatasets,
-              aiNewsItems: data.aiNewsItems,
               convLabImages: data.convLabImages,
               attentionVizScenarios: data.attentionVizScenarios,
               nnBuilderDatasets: data.nnBuilderDatasets,
               ethicsCaseScenarios: data.ethicsCaseScenarios,
               storyScenarios: data.storyScenarios,
-              chapterReadings: data.chapterReadings,
             ),
-            LearnScreen(questions: questions, terms: data.terms),
+            LearnScreen(
+              questions: questions,
+              terms: data.terms,
+              exam: data.exam,
+              chapterReadings: data.chapterReadings,
+              aiNewsItems: data.aiNewsItems,
+            ),
             MockExamScreen(exam: data.exam, questions: questions),
             RecordScreen(exam: data.exam, questions: questions),
             SettingsScreen(questions: questions, exam: data.exam, terms: data.terms),
