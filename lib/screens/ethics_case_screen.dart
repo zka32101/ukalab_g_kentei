@@ -3,6 +3,8 @@ import 'package:ukalab_core/ui.dart';
 import 'package:flutter/material.dart';
 import 'package:ukalab_core/ukalab_core.dart';
 
+import '../widgets/ai_draft_notice.dart';
+
 /// 「AI倫理ケース」一覧（画期的な機能7）。架空のケースに対して公平性・
 /// プライバシー・説明責任・著作権などの観点から適切な判断を選ぶ。UIは
 /// 「手法の選び方」と同じ MethodChoiceWidget を再利用する。
@@ -33,7 +35,11 @@ class EthicsCaseScreen extends StatelessWidget {
                   appBar: AppBar(title: Text(s.title)),
                   body: SingleChildScrollView(
                     padding: const EdgeInsets.all(16),
-                    child: MethodChoiceWidget(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isAiDraftSourceRef(s.sourceRef)) const AiDraftNotice(),
+                        MethodChoiceWidget(
                       scenario: MethodChoiceScenarioSpec(
                         title: s.title,
                         caseDescription: s.caseDescription,
@@ -47,6 +53,8 @@ class EthicsCaseScreen extends StatelessWidget {
                         ],
                         explanation: s.explanation,
                       ),
+                    ),
+                      ],
                     ),
                   ),
                 ),
