@@ -82,6 +82,8 @@ void main() {
     final env = await _env(
         tester, NagaraEntryCard(exam: _exam(), questions: [_q('a'), _q('b')], terms: const []));
     await _openSession(tester);
+    // 画面の切り替えアニメーション(Flutter の版によって拡大を伴う)が終わるまで待ってから押す。
+    await tester.pump(const Duration(milliseconds: 600));
 
     expect(find.byType(NagaraSessionView), findsOneWidget);
     expect(env.speech.spoken, hasLength(1));
