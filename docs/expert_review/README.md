@@ -1,6 +1,7 @@
 # 専門家レビュー対象（AI下書き・未確認）
 
-- **確認済み（2026-10-28）**: 問題データ（`assets/questions/g_kentei.jsonl`）の ai-draft 問題 148問（g_kentei-0711〜0858）は専門家確認OKとなり、`ai-draft` タグを外した（`sourceRef` は「専門家確認済み」に更新、`contentVer` は 2026.10.28）。下の対象数・運用ルールは確認前の記録。体験型（`assets/experience/`）の `contentStatus: ai-draft` は本件の対象外で、各 checklist の運用のまま。
+- **確認済み（2026-10-28）**: 問題データ（`assets/questions/g_kentei.jsonl`）の ai-draft 問題 148問（g_kentei-0711〜0858）は専門家確認OKとなり、`ai-draft` タグを外した（`sourceRef` は「専門家確認済み」に更新、`contentVer` は 2026.10.28）。下の対象数・運用ルールは確認前の記録。体験型（`assets/experience/`）の `contentStatus: ai-draft` は本件の対象外だった。
+- **体験コンテンツの扱い（2026-10-28）**: 体験コンテンツ10本（story_mode 4・ethics_case 3・conv_lab/ml_lab/nn_builder 各1）は「あくまで体験なので専門家確認は不要」と運営者が判断し、`contentStatus: ai-draft` を外した（`contentVer` 2026.10.28、本文は変更なし）。**専門家の確認は行っていない**ため「専門家確認済み」とは書かない。`sourceRef` は「自作（教育用の仮データ。AI下書き由来、体験コンテンツのため専門家確認は不要と判断）」として由来を残し、画面の「AI下書き・専門確認前」注記は出なくなる（注記は `sourceRef` に「AI下書き由来」を含まない「AI下書き」表記の行にだけ出る）。以後の体験コンテンツ追加分は従来どおり ai-draft から始める。
 
 - 対象: ai-draft 問題 108問（g_kentei-0711〜0818。0771〜0818 は新形式の○×30・空欄補充12・説明から用語6）
 - 新形式の行: 「問題文」末尾に形式名を付記。○×は正解列に○/×、空欄補充は選択肢列に各空欄の候補・正解列に空欄ごとの正解（/ は許容表記）、説明から用語は問題文に説明文

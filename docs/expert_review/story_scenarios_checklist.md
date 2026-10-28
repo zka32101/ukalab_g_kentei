@@ -3,6 +3,7 @@
 ## 1. 目的と注意
 
 - 対象: `assets/experience/story_mode_g_kentei.jsonl` の g_kentei_story-0002〜0005（4本）。
+- 【2026-10-28 更新】運営者が「体験コンテンツは専門家確認不要」と判断し、`contentStatus: ai-draft` を外した（専門家確認は未実施。`sourceRef` は「AI下書き由来」表記、注記は出なくなった）。以下は当初の記録。
 - 全本 `contentStatus: ai-draft`（専門家確認前）。画面には「学習用の架空シナリオ（AI下書き・専門確認前）」の注記が出る。
 - 架空の会社・架空の状況のみ。実在の事件・企業・人物名、法令の条文番号、統計、年月日は入れていない。
 - 既存ルール（`docs/expert_review/README.md`）に従う。`ai-draft` は専門家の「OK」が出るまで外さない。外すときは別PRで `contentVer` を更新し、`sourceRef` の「AI下書き」と `contentStatus` も外す（画面の注記が消える）。
