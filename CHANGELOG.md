@@ -2,6 +2,7 @@
 
 ## [Unreleased]
 
+- 体験コンテンツ10本（story_mode 4・ethics_case 3・conv_lab/ml_lab/nn_builder 各1）の `contentStatus: ai-draft` を外した（運営者が「体験なので専門家確認は不要」と判断。専門家確認は未実施のため「確認済み」とは表記しない。`sourceRef` は「AI下書き由来、専門家確認は不要と判断」、`contentVer` 2026.10.28、本文は変更なし）。画面の「AI下書き・専門確認前」注記は対象外になり、`isAiDraftSourceRef` は「AI下書き由来」を下書き扱いしない。ai_draft_story_test / ai_draft_ethics_test は両状態の期待値に更新（2026-10-28）
 - 問題データ 148問（g_kentei-0711〜0858）の専門家確認が完了し、`ai-draft` タグを外した（問題文・選択肢・正誤・解説は変更なし。`sourceRef` を「専門家確認済み」に更新、`contentVer` 2026.10.28）
 
 - ukalab_core を v0.82.2 に更新（資格専用キャラの画像が表示される）
