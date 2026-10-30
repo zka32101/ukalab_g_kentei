@@ -25,6 +25,9 @@ import '../widgets/peer_stats_settings_section.dart';
 import 'exam_prep_entry.dart';
 import 'mistake_note_screen.dart';
 
+/// 本番の applicationId（相互紹介で自アプリを除外するのに使う。ukalab_core の kUkalabAppIds にある値）。
+const kCrossPromoAppId = 'com.yourwish.ukalab.g_kentei';
+
 /// 「設定」タブ。課金（決定35）の購入・復元を提供する。広告はnoads/premiumの
 /// どちらかを持つと自動的に非表示になる（`AdGate.adsHidden`）。
 class SettingsScreen extends ConsumerWidget {
@@ -176,7 +179,7 @@ class SettingsScreen extends ConsumerWidget {
         const Divider(height: 24),
         const _NagaraSettingsTiles(),
         // 掲載リストが空なら何も表示しない。うかラボは大人向けなので保護者ゲートは不要。
-        const UkalabCrossPromoSection(currentAppId: 'com.yourwish.ukalab.g_kentei'),
+        const UkalabCrossPromoSection(currentAppId: kCrossPromoAppId),
       ],
     );
   }
