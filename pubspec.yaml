@@ -23,7 +23,7 @@ dependencies:
 
   # 推しのメダル・共有カードの画像を OS の共有シートで共有する。
   # CI の Flutter 3.35（Dart 3.9）で解決できるよう 12.x に留める（13.x は Dart 3.10 以上が必要）。
-  share_plus: ">=12.0.0 <13.0.0"
+  share_plus: ^13.3.1
   # Web で共有に対応していないとき、画像をダウンロードにフォールバックする（条件付き import 側で使う）
   web: ^1.1.0
 
@@ -39,7 +39,7 @@ dependencies:
   firebase_core: ^3.6.0
   firebase_auth: ^5.3.1
   cloud_firestore: ^5.4.4
-  package_info_plus: ^9.0.1
+  package_info_plus: ^10.2.2
 
   # ながら学習モードの読み上げ（端末標準の音声合成）
 
